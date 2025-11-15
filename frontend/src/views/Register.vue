@@ -86,8 +86,8 @@
               placeholder="请输入验证码"
               required
             />
-            <button type="button" class="send-code-btn" @click="sendCode" :disabled="codeSending">
-              {{ codeSending ? '发送中...' : '获取验证码' }}
+            <button type="button" class="send-code-btn" @click="sendCode" :disabled="codeSending || countdown > 0">
+              {{ codeSending ? '发送中...' : countdown > 0 ? `${countdown}秒后重试` : '获取验证码' }}
             </button>
           </div>
         </div>
@@ -127,6 +127,7 @@ export default {
     const error = ref('')
     const success = ref('')
     const codeSending = ref(false)
+    const countdown = ref(0)
     const showPassword = ref(false)
     const showConfirmPassword = ref(false)
     
@@ -153,7 +154,16 @@ export default {
           email: form.email
         })
         
-        alert('验证码已发送，请查收邮箱')
+        // 启动60秒倒计时
+        countdown.value = 60
+        const timer = setInterval(() => {
+          countdown.value--
+          if (countdown.value <= 0) {
+            clearInterval(timer)
+          }
+        }, 1000)
+        
+        success.value = '验证码已发送，请查收邮箱'
         console.log('验证码已发送到邮箱')
       } catch (err) {
         error.value = err.response?.data?.message || '发送验证码失败'
@@ -215,6 +225,7 @@ export default {
       error,
       success,
       codeSending,
+      countdown,
       showPassword,
       showConfirmPassword,
       sendCode,
