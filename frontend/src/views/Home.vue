@@ -11,6 +11,9 @@
             <span class="author">{{ article.author?.nickname || '匿名用户' }}</span>
             <span class="date">{{ formatDate(article.createdAt) }}</span>
           </div>
+          <div class="article-cover-container">
+            <img :src="article.coverImage || defaultCover" alt="文章封面" class="article-cover">
+          </div>
           <div class="article-excerpt" v-html="getExcerpt(article.content)"></div>
         </router-link>
       </div>
@@ -26,6 +29,7 @@
 <script>
 import { ref, onMounted } from 'vue'
 import axios from '../axios'
+import defaultCover from '../assets/images/default_cover.png'
 
 export default {
   name: 'Home',
@@ -96,7 +100,8 @@ export default {
       prevPage,
       nextPage,
       formatDate,
-      getExcerpt
+      getExcerpt,
+      defaultCover
     }
   }
 }
@@ -138,6 +143,22 @@ export default {
   padding: 24px;
   transition: transform 0.2s, box-shadow 0.2s;
 }
+
+.article-cover-container {
+  width: 100%;
+  height: 200px;
+  margin: 16px 0;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.article-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
 
 .article-card:hover {
   transform: translateY(-2px);

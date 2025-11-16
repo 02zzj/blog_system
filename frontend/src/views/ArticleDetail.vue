@@ -141,6 +141,8 @@ export default {
 .article-detail {
   max-width: 800px;
   margin: 0 auto;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .loading,
@@ -160,6 +162,7 @@ export default {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 32px;
+  overflow-x: hidden;
 }
 
 .article-title {
@@ -167,6 +170,8 @@ export default {
   margin-bottom: 20px;
   color: #333;
   font-weight: 500;
+  word-break: break-word;
+  text-align: center;
 }
 
 .article-meta {
@@ -177,10 +182,11 @@ export default {
   font-size: 14px;
   align-items: center;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .delete-btn {
-  margin-left: auto;
+  margin-left: 20px;
   background-color: #ff4d4f;
   color: white;
   border: none;
@@ -205,56 +211,183 @@ export default {
   line-height: 1.8;
   color: #333;
   font-size: 16px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  width: 100%;
 }
 
-.article-body h1,
-.article-body h2,
-.article-body h3 {
+/* 使用深度选择器确保样式能够穿透到v-html渲染的内容 */
+:deep(.article-body) h1,
+:deep(.article-body) h2,
+:deep(.article-body) h3 {
   margin: 24px 0 16px;
   color: #262626;
+  word-break: break-word;
 }
 
-.article-body p {
+/* 段落缩进 - 必须使用深度选择器 */
+:deep(.article-body) p {
   margin-bottom: 16px;
+  word-break: break-word;
+  text-indent: 2em;
 }
 
-.article-body img {
-  max-width: 100%;
-  height: auto;
-  margin: 16px 0;
+/* 图片样式 */
+:deep(.article-body) img {
+  max-width: 100% !important;
+  width: 100% !important;
+  height: auto !important;
+  margin: 16px auto;
   border-radius: 4px;
+  display: block;
+  object-fit: contain;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-.article-body blockquote {
-  border-left: 4px solid #d9d9d9;
-  margin: 16px 0;
-  padding: 8px 16px;
-  color: #666;
-  background-color: #fafafa;
+/* 处理可能从富文本编辑器过来的图片容器 */
+:deep(.article-body *) {
+  max-width: 100% !important;
+  height: auto !important;
+  box-sizing: border-box;
 }
 
-.article-body pre {
-  background-color: #f5f5f5;
-  padding: 16px;
-  border-radius: 4px;
-  overflow-x: auto;
-  margin: 16px 0;
+/* 补充Quill编辑器默认样式 - 使用深度选择器 */
+:deep(.article-body .ql-indent-1) {
+  padding-left: 32px !important;
 }
 
-.article-body code {
-  background-color: #f5f5f5;
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-family: 'Consolas', 'Monaco', monospace;
+:deep(.article-body .ql-indent-2) {
+  padding-left: 64px !important;
 }
 
-.article-body ul,
-.article-body ol {
-  margin: 16px 0;
-  padding-left: 24px;
+:deep(.article-body .ql-indent-3) {
+  padding-left: 96px !important;
 }
 
-.article-body li {
-  margin-bottom: 8px;
+:deep(.article-body .ql-indent-4) {
+  padding-left: 128px !important;
+}
+
+/* 文本对齐样式 */
+:deep(.article-body .ql-align-center) {
+  text-align: center !important;
+}
+
+:deep(.article-body .ql-align-right) {
+  text-align: right !important;
+}
+
+:deep(.article-body .ql-align-justify) {
+  text-align: justify !important;
+}
+
+/* 引用块增强样式 */
+:deep(.article-body blockquote) {
+  border-left: 4px solid #1890ff !important;
+  margin: 16px 0 !important;
+  padding: 12px 16px !important;
+  color: #666 !important;
+  background-color: #f0f8ff !important;
+  border-radius: 0 4px 4px 0 !important;
+}
+
+/* 表格样式增强 */
+:deep(.article-body table) {
+  width: 100% !important;
+  overflow-x: auto !important;
+  display: block !important;
+  border-collapse: collapse !important;
+  margin: 16px 0 !important;
+}
+
+:deep(.article-body table th),
+:deep(.article-body table td) {
+  border: 1px solid #d9d9d9 !important;
+  padding: 8px 12px !important;
+  text-align: left !important;
+}
+
+:deep(.article-body table th) {
+  background-color: #fafafa !important;
+  font-weight: 500 !important;
+}
+
+/* 列表项增强 */
+:deep(.article-body li.ql-indent-1) {
+  padding-left: 0 !important;
+}
+
+:deep(.article-body li.ql-indent-2) {
+  padding-left: 0 !important;
+}
+
+/* 代码块黑色背景 - 使用深度选择器并增加优先级 */
+:deep(.article-body pre) {
+  background-color: #1e1e1e !important;
+  color: #d4d4d4 !important;
+  padding: 16px !important;
+  border-radius: 4px !important;
+  overflow-x: auto !important;
+  margin: 16px 0 !important;
+  display: block !important;
+  max-width: 100% !important;
+  font-family: 'Consolas', 'Monaco', monospace !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+:deep(.article-body code) {
+  background-color: #f5f5f5 !important;
+  padding: 2px 4px !important;
+  border-radius: 4px !important;
+  font-family: 'Consolas', 'Monaco', monospace !important;
+  font-size: 0.9em !important;
+}
+
+/* 列表样式 - 使用深度选择器并增加优先级 */
+:deep(.article-body ul),
+:deep(.article-body ol) {
+  margin: 16px 0 !important;
+  padding-left: 32px !important;
+}
+
+:deep(.article-body ul) {
+  list-style-type: disc !important;
+}
+
+:deep(.article-body ol) {
+  list-style-type: decimal !important;
+}
+
+:deep(.article-body li) {
+  margin-bottom: 8px !important;
+  word-break: break-word !important;
+  text-align: justify !important;
+}
+
+/* 直接添加Quill编辑器核心样式的深度选择器版本 */
+:deep(ol.ql-list),
+:deep(ul.ql-list) {
+  padding-left: 32px !important;
+}
+
+:deep(ol.ql-list) {
+  list-style-type: decimal !important;
+}
+
+:deep(ul.ql-list) {
+  list-style-type: disc !important;
+}
+
+/* 确保代码块的黑色背景和文字颜色正确显示 */
+:deep(.ql-syntax) {
+  background-color: #1e1e1e !important;
+  color: #d4d4d4 !important;
+  font-family: 'Consolas', 'Monaco', monospace !important;
+  border-radius: 4px !important;
+  padding: 16px !important;
+  margin: 16px 0 !important;
 }
 </style>

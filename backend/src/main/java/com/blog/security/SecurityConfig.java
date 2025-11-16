@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -32,6 +34,8 @@ public class SecurityConfig {
                 .authorizeRequests()
                         .antMatchers("/api/users/send-verification", "/api/users/register", "/api/users/login").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/articles", "/api/articles/*").permitAll()
+                        // 允许对上传文件的公共访问
+                        .antMatchers("/uploads/**").permitAll()
                         .antMatchers("/api/users/me", "/api/articles/*").authenticated()
                         .anyRequest().authenticated()
                         .and()

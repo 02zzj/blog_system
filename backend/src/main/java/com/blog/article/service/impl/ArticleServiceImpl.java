@@ -4,6 +4,7 @@ import com.blog.article.dto.ArticleCreateDTO;
 import com.blog.article.entity.Article;
 import com.blog.article.repository.ArticleRepository;
 import com.blog.article.service.ArticleService;
+import com.blog.file.util.FileUtils;
 import com.blog.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,9 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Autowired
     private ArticleRepository articleRepository;
+
+    @Autowired
+    private FileUtils fileUtils;
 
     @Override
     public Article createArticle(ArticleCreateDTO dto, User author) {
@@ -53,6 +57,11 @@ public class ArticleServiceImpl implements ArticleService {
         if (!article.getAuthor().getId().equals(operator.getId())) {
             throw new RuntimeException("无权删除此文章");
         }
+        
+        // 在删除文章前，先删除相关的图片文件
+        String content = article.getContent();
+        String coverImage = article.getCoverImage();
+        fileUtils.deleteArticleImages(content, coverImage);
         
         articleRepository.delete(article);
     }

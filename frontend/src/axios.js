@@ -17,6 +17,10 @@ instance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+    // 对于FormData类型的请求，不要设置Content-Type，让浏览器自动处理
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type']
+    }
     console.log('API Request:', config.method?.toUpperCase(), config.url)
     return config
   },
