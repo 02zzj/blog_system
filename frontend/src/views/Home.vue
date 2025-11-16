@@ -1,6 +1,13 @@
 <template>
   <div class="home">
     <h1>博客列表</h1>
+    <div class="sort-controls">
+      <label>排序方式：</label>
+      <select v-model="sortOrder" @change="handleSortChange">
+        <option value="desc">最新优先</option>
+        <option value="asc">最早优先</option>
+      </select>
+    </div>
     <div v-if="loading" class="loading">加载中...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else class="article-list">
@@ -9,7 +16,7 @@
           <h2 class="article-title">{{ article.title }}</h2>
           <div class="article-meta">
             <span class="author">{{ article.author?.nickname || '匿名用户' }}</span>
-            <span class="date">{{ formatDate(article.createdAt) }}</span>
+            <span class="date">{{ formatDate(article.updatedAt) }}</span>
           </div>
           <div class="article-cover-container">
             <img :src="article.coverImage || defaultCover" alt="文章封面" class="article-cover">
@@ -40,13 +47,14 @@ export default {
     const currentPage = ref(1)
     const pageSize = ref(10)
     const totalPages = ref(1)
+    const sortOrder = ref('desc') // 默认降序，最新优先
 
-    const fetchArticles = async (page = 1) => {
+    const fetchArticles = async (page = 1, order = sortOrder.value) => {
       loading.value = true
       error.value = ''
       try {
-        // 添加/api前缀以匹配axios配置
-        const response = await axios.get(`/api/articles?page=${page}&size=${pageSize.value}`)
+        // 添加/api前缀以匹配axios配置，增加排序参数
+        const response = await axios.get(`/api/articles?page=${page}&size=${pageSize.value}&sortField=updatedAt&sortDirection=${order}`)
         articles.value = response.data?.content || response.data || []
         // 计算总页数
         const totalElements = response.data?.totalElements || response.data?.length || 0
@@ -58,6 +66,12 @@ export default {
       } finally {
         loading.value = false
       }
+    }
+    
+    const handleSortChange = () => {
+      // 切换排序时重置到第一页
+      currentPage.value = 1
+      fetchArticles(1, sortOrder.value)
     }
 
     const prevPage = () => {
@@ -97,8 +111,10 @@ export default {
       error,
       currentPage,
       totalPages,
+      sortOrder,
       prevPage,
       nextPage,
+      handleSortChange,
       formatDate,
       getExcerpt,
       defaultCover
@@ -114,9 +130,41 @@ export default {
 }
 
 .home h1 {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   font-size: 32px;
   color: #333;
+}
+
+.sort-controls {
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-controls label {
+  font-size: 14px;
+  color: #666;
+}
+
+.sort-controls select {
+  padding: 6px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.sort-controls select:hover {
+  border-color: #40a9ff;
+}
+
+.sort-controls select:focus {
+  outline: none;
+  border-color: #40a9ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
 
 .loading,

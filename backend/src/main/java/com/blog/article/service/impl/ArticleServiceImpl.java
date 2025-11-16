@@ -32,15 +32,47 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Page<Article> getArticles(int page, int size) {
+    public Page<Article> getArticles(int page, int size, String sortField, String sortDirection) {
         // 注意：Spring Data JPA的页码从0开始
-        return articleRepository.findAll(PageRequest.of(page - 1, size));
+        // 默认为按updatedAt降序排序
+        if (sortField == null || sortField.isEmpty()) {
+            sortField = "updatedAt";
+        }
+        if (sortDirection == null || sortDirection.isEmpty()) {
+            sortDirection = "desc";
+        }
+        
+        // 创建排序对象
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(
+            sortDirection.equalsIgnoreCase("asc") ? 
+            org.springframework.data.domain.Sort.Direction.ASC : 
+            org.springframework.data.domain.Sort.Direction.DESC,
+            sortField
+        );
+        
+        return articleRepository.findAll(PageRequest.of(page - 1, size, sort));
     }
     
     @Override
-    public Page<Article> getArticlesByUserId(Long userId, int page, int size) {
+    public Page<Article> getArticlesByUserId(Long userId, int page, int size, String sortField, String sortDirection) {
         // 注意：Spring Data JPA的页码从0开始
-        return articleRepository.findByAuthorId(userId, PageRequest.of(page - 1, size));
+        // 默认为按updatedAt降序排序
+        if (sortField == null || sortField.isEmpty()) {
+            sortField = "updatedAt";
+        }
+        if (sortDirection == null || sortDirection.isEmpty()) {
+            sortDirection = "desc";
+        }
+        
+        // 创建排序对象
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(
+            sortDirection.equalsIgnoreCase("asc") ? 
+            org.springframework.data.domain.Sort.Direction.ASC : 
+            org.springframework.data.domain.Sort.Direction.DESC,
+            sortField
+        );
+        
+        return articleRepository.findByAuthorId(userId, PageRequest.of(page - 1, size, sort));
     }
 
     @Override

@@ -7,8 +7,8 @@ import org.springframework.data.domain.Page;
 
 public interface ArticleService {
     Article createArticle(ArticleCreateDTO dto, User author);
-    Page<Article> getArticles(int page, int size);
-    Page<Article> getArticlesByUserId(Long userId, int page, int size);
+    Page<Article> getArticles(int page, int size, String sortField, String sortDirection);
+    Page<Article> getArticlesByUserId(Long userId, int page, int size, String sortField, String sortDirection);
     Article getArticle(Long id);
     void deleteArticle(Long id, User operator);
 }

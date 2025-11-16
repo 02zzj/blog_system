@@ -29,12 +29,14 @@ public class ArticleController {
     public ResponseResult<Page<?>> list(
             @RequestParam(defaultValue = "1") int page, 
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) Long userId) {
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) String sortField,
+            @RequestParam(required = false) String sortDirection) {
         Page<?> articles;
         if (userId != null) {
-            articles = articleService.getArticlesByUserId(userId, page, size);
+            articles = articleService.getArticlesByUserId(userId, page, size, sortField, sortDirection);
         } else {
-            articles = articleService.getArticles(page, size);
+            articles = articleService.getArticles(page, size, sortField, sortDirection);
         }
         return ResponseResult.success(articles);
     }

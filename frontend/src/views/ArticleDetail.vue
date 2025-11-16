@@ -6,7 +6,7 @@
       <h1 class="article-title">{{ article.title }}</h1>
       <div class="article-meta">
         <span class="author">{{ article.author?.nickname || '匿名用户' }}</span>
-        <span class="date">{{ formatDate(article.createdAt) }}</span>
+        <span class="date">{{ formatDate(article.updatedAt) }}</span>
         <button 
           v-if="isAuthor" 
           @click="deleteArticle" 

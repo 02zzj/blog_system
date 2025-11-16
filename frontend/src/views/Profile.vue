@@ -23,13 +23,20 @@
       
       <div class="my-articles">
         <h2>我的文章</h2>
+        <div class="sort-controls">
+          <label>排序方式：</label>
+          <select v-model="sortOrder" @change="handleSortChange">
+            <option value="desc">最新优先</option>
+            <option value="asc">最早优先</option>
+          </select>
+        </div>
         <div v-if="articles.length === 0" class="no-articles">暂无文章</div>
         <div v-else class="article-list">
           <div v-for="article in articles" :key="article.id" class="article-card">
             <router-link :to="'/article/' + article.id" class="article-link">
               <h3 class="article-title">{{ article.title }}</h3>
               <div class="article-meta">
-                <span class="date">{{ formatDate(article.createdAt) }}</span>
+                <span class="date">{{ formatDate(article.updatedAt) }}</span>
               </div>
             </router-link>
             <div class="article-actions">
@@ -62,6 +69,7 @@ export default {
     const currentPage = ref(1)
     const pageSize = ref(10)
     const totalPages = ref(1)
+    const sortOrder = ref('desc') // 默认降序，最新优先
 
     const fetchUserInfo = async () => {
       loading.value = true
@@ -77,10 +85,10 @@ export default {
       }
     }
 
-    const fetchUserArticles = async (page = 1) => {
+    const fetchUserArticles = async (page = 1, order = sortOrder.value) => {
       try {
-        // 添加用户ID参数，确保只获取当前用户的文章
-        const response = await axios.get(`/api/articles?page=${page}&size=${pageSize.value}&userId=${user.value?.id}`)
+        // 添加用户ID参数，确保只获取当前用户的文章，增加排序参数
+        const response = await axios.get(`/api/articles?page=${page}&size=${pageSize.value}&userId=${user.value?.id}&sortField=updatedAt&sortDirection=${order}`)
         articles.value = response.data?.content || response.data || []
         // 计算总页数
         const totalElements = response.data?.totalElements || response.data?.length || 0
@@ -89,6 +97,12 @@ export default {
       } catch (err) {
         console.error('获取用户文章失败:', err)
       }
+    }
+    
+    const handleSortChange = () => {
+      // 切换排序时重置到第一页
+      currentPage.value = 1
+      fetchUserArticles(1, sortOrder.value)
     }
 
     const deleteArticle = async (articleId) => {
@@ -155,9 +169,11 @@ export default {
       error,
       currentPage,
       totalPages,
+      sortOrder,
       deleteArticle,
       prevPage,
       nextPage,
+      handleSortChange,
       formatDate
     }
   }
@@ -202,9 +218,41 @@ export default {
 
 .profile-info h2,
 .my-articles h2 {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   font-size: 20px;
   color: #333;
+}
+
+.sort-controls {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-controls label {
+  font-size: 14px;
+  color: #666;
+}
+
+.sort-controls select {
+  padding: 6px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.sort-controls select:hover {
+  border-color: #40a9ff;
+}
+
+.sort-controls select:focus {
+  outline: none;
+  border-color: #40a9ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
 
 .info-item {
