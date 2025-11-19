@@ -34,13 +34,16 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import axios from '../axios'
 import defaultCover from '../assets/images/default_cover.png'
 
 export default {
   name: 'Home',
   setup() {
+    const router = useRouter()
+    const route = useRoute()
     const articles = ref([])
     const loading = ref(false)
     const error = ref('')
@@ -48,13 +51,36 @@ export default {
     const pageSize = ref(10)
     const totalPages = ref(1)
     const sortOrder = ref('desc') // 默认降序，最新优先
+    // 不再在组件内部管理搜索状态，而是从全局状态获取
 
     const fetchArticles = async (page = 1, order = sortOrder.value) => {
       loading.value = true
       error.value = ''
       try {
-        // 添加/api前缀以匹配axios配置，增加排序参数
-        const response = await axios.get(`/api/articles?page=${page}&size=${pageSize.value}&sortField=updatedAt&sortDirection=${order}`)
+        // 添加/api前缀以匹配axios配置，增加排序参数和搜索关键词
+        const queryParams = new URLSearchParams()
+        queryParams.append('page', page)
+        queryParams.append('size', pageSize.value)
+        queryParams.append('sortField', 'updatedAt')
+        queryParams.append('sortDirection', order)
+        
+        // 从全局状态获取搜索参数
+        const globalSearch = window.globalSearchState || {}
+        if (globalSearch.keyword) {
+          if (globalSearch.type === 'author') {
+            // 按作者昵称搜索
+            queryParams.append('authorNickname', globalSearch.keyword)
+          } else if (globalSearch.type === 'title_content') {
+            // 仅搜索标题和内容
+            queryParams.append('keyword', globalSearch.keyword)
+            queryParams.append('searchType', 'title_content')
+          } else {
+            // 默认搜索标题、内容和作者昵称
+            queryParams.append('keyword', globalSearch.keyword)
+          }
+        }
+        
+        const response = await axios.get(`/api/articles?${queryParams.toString()}`)
         articles.value = response.data?.content || response.data || []
         // 计算总页数
         const totalElements = response.data?.totalElements || response.data?.length || 0
@@ -69,7 +95,7 @@ export default {
     }
     
     const handleSortChange = () => {
-      // 切换排序时重置到第一页
+      // 切换排序时重置到第一页，保留搜索关键词
       currentPage.value = 1
       fetchArticles(1, sortOrder.value)
     }
@@ -85,6 +111,8 @@ export default {
         fetchArticles(currentPage.value + 1)
       }
     }
+    
+    // 不再需要handleSearch方法，由App组件处理搜索
 
     // 格式化日期
     const formatDate = (dateString) => {
@@ -101,8 +129,62 @@ export default {
       return text.length > 100 ? text.substring(0, 100) + '...' : text
     }
 
-    onMounted(() => {
+    // 重置搜索状态的函数
+    const resetSearchState = () => {
+      // 清除全局搜索状态
+      window.globalSearchState = {}
+      currentPage.value = 1
       fetchArticles()
+    }
+    
+    onMounted(() => {
+      // 页面首次加载时重置搜索状态
+      resetSearchState()
+    })
+    
+    // 监听路由变化，确保每次导航到首页时都重置搜索状态
+    watch(
+      () => route.fullPath, 
+      () => {
+        if (route.path === '/') {
+          resetSearchState()
+        }
+      },
+      { immediate: true }
+    )
+    
+    // 监听全局重置标志和搜索状态变化
+    // 使用定时器定期检查全局状态的变化
+    let lastResetFlag = null
+    let lastSearchStateTimestamp = null
+    const resetCheckInterval = setInterval(() => {
+      // 检查重置标志
+      if (window.homeResetFlag && window.homeResetFlag !== lastResetFlag) {
+        lastResetFlag = window.homeResetFlag
+        // 检查是否有搜索条件，如果有则执行搜索，否则重置搜索
+        const currentSearch = window.globalSearchState || {}
+        if (currentSearch.keyword) {
+          // 有搜索条件，执行搜索
+          currentPage.value = 1
+          fetchArticles()
+        } else {
+          // 无搜索条件，重置搜索
+          resetSearchState()
+        }
+      }
+      
+      // 检查搜索状态变化
+      const currentSearch = window.globalSearchState || {}
+      if (currentSearch.keyword && currentSearch.timestamp !== lastSearchStateTimestamp) {
+        lastSearchStateTimestamp = currentSearch.timestamp
+        currentPage.value = 1
+        fetchArticles()
+      }
+    }, 100) // 每100毫秒检查一次
+    
+    // 组件卸载时清除定时器
+    onUnmounted(() => {
+      clearInterval(resetCheckInterval)
     })
 
     return {
@@ -112,12 +194,12 @@ export default {
       currentPage,
       totalPages,
       sortOrder,
-      prevPage,
-      nextPage,
-      handleSortChange,
+      defaultCover,
       formatDate,
       getExcerpt,
-      defaultCover
+      handleSortChange,
+      prevPage,
+      nextPage
     }
   }
 }
@@ -125,9 +207,14 @@ export default {
 
 <style scoped>
 .home {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
+  padding: 20px;
 }
+
+/* 搜索功能样式已移至App.vue */
+
+
 
 .home h1 {
   margin-bottom: 20px;

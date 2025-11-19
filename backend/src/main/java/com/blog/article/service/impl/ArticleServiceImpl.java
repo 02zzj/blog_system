@@ -82,6 +82,90 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public Page<Article> searchArticles(String keyword, int page, int size, String sortField, String sortDirection) {
+        // 设置默认排序
+        if (sortField == null || sortField.isEmpty()) {
+            sortField = "updatedAt";
+        }
+        if (sortDirection == null || sortDirection.isEmpty()) {
+            sortDirection = "desc";
+        }
+        
+        // 创建排序对象
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(
+            sortDirection.equalsIgnoreCase("asc") ? 
+            org.springframework.data.domain.Sort.Direction.ASC : 
+            org.springframework.data.domain.Sort.Direction.DESC,
+            sortField
+        );
+        
+        return articleRepository.searchByKeyword(keyword, PageRequest.of(page - 1, size, sort));
+    }
+    
+    @Override
+    public Page<Article> searchArticlesByUserId(Long userId, String keyword, int page, int size, String sortField, String sortDirection) {
+        // 设置默认排序
+        if (sortField == null || sortField.isEmpty()) {
+            sortField = "updatedAt";
+        }
+        if (sortDirection == null || sortDirection.isEmpty()) {
+            sortDirection = "desc";
+        }
+        
+        // 创建排序对象
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(
+            sortDirection.equalsIgnoreCase("asc") ? 
+            org.springframework.data.domain.Sort.Direction.ASC : 
+            org.springframework.data.domain.Sort.Direction.DESC,
+            sortField
+        );
+        
+        return articleRepository.searchByUserIdAndKeyword(userId, keyword, PageRequest.of(page - 1, size, sort));
+    }
+    
+    @Override
+    public Page<Article> searchArticlesByAuthorNickname(String nickname, int page, int size, String sortField, String sortDirection) {
+        // 设置默认排序
+        if (sortField == null || sortField.isEmpty()) {
+            sortField = "updatedAt";
+        }
+        if (sortDirection == null || sortDirection.isEmpty()) {
+            sortDirection = "desc";
+        }
+        
+        // 创建排序对象
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(
+            sortDirection.equalsIgnoreCase("asc") ? 
+            org.springframework.data.domain.Sort.Direction.ASC : 
+            org.springframework.data.domain.Sort.Direction.DESC,
+            sortField
+        );
+        
+        return articleRepository.searchByAuthorNickname(nickname, PageRequest.of(page - 1, size, sort));
+    }
+    
+    @Override
+    public Page<Article> searchArticlesWithAuthor(String keyword, int page, int size, String sortField, String sortDirection) {
+        // 设置默认排序
+        if (sortField == null || sortField.isEmpty()) {
+            sortField = "updatedAt";
+        }
+        if (sortDirection == null || sortDirection.isEmpty()) {
+            sortDirection = "desc";
+        }
+        
+        // 创建排序对象
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(
+            sortDirection.equalsIgnoreCase("asc") ? 
+            org.springframework.data.domain.Sort.Direction.ASC : 
+            org.springframework.data.domain.Sort.Direction.DESC,
+            sortField
+        );
+        
+        return articleRepository.searchByKeywordAndAuthorNickname(keyword, PageRequest.of(page - 1, size, sort));
+    }
+    
+    @Override
     public void deleteArticle(Long id, User operator) {
         Article article = getArticle(id);
         

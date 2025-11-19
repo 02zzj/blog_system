@@ -30,14 +30,40 @@ public class ArticleController {
             @RequestParam(defaultValue = "1") int page, 
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String authorNickname,
+            @RequestParam(required = false) String searchType,
             @RequestParam(required = false) String sortField,
             @RequestParam(required = false) String sortDirection) {
         Page<?> articles;
-        if (userId != null) {
-            articles = articleService.getArticlesByUserId(userId, page, size, sortField, sortDirection);
+        
+        // 优先处理按作者昵称搜索
+        if (authorNickname != null && !authorNickname.trim().isEmpty()) {
+            articles = articleService.searchArticlesByAuthorNickname(authorNickname, page, size, sortField, sortDirection);
+        } else if (keyword != null && !keyword.trim().isEmpty()) {
+            // 有搜索关键词的情况
+            if (userId != null) {
+                // 根据用户ID和关键词搜索
+                articles = articleService.searchArticlesByUserId(userId, keyword, page, size, sortField, sortDirection);
+            } else {
+                // 根据searchType决定使用哪种搜索方式
+                if ("title_content".equals(searchType)) {
+                    // 仅搜索标题和内容
+                    articles = articleService.searchArticles(keyword, page, size, sortField, sortDirection);
+                } else {
+                    // 默认搜索标题、内容和作者昵称
+                    articles = articleService.searchArticlesWithAuthor(keyword, page, size, sortField, sortDirection);
+                }
+            }
         } else {
-            articles = articleService.getArticles(page, size, sortField, sortDirection);
+            // 没有搜索关键词的情况
+            if (userId != null) {
+                articles = articleService.getArticlesByUserId(userId, page, size, sortField, sortDirection);
+            } else {
+                articles = articleService.getArticles(page, size, sortField, sortDirection);
+            }
         }
+        
         return ResponseResult.success(articles);
     }
 
