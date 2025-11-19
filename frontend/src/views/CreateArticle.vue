@@ -1,6 +1,6 @@
 <template>
   <div class="create-article">
-    <h1>写文章</h1>
+    <h1>{{ isEditing ? '编辑文章' : '发布文章' }}</h1>
     <form @submit.prevent="handleSubmit">
       <div class="form-group">
         <label for="title">标题</label>
@@ -54,7 +54,7 @@
       <div class="form-actions">
         <button type="button" class="cancel-btn" @click="cancel">取消</button>
         <button type="submit" class="submit-btn" :disabled="loading">
-          {{ loading ? '发布中...' : '发布文章' }}
+          {{ loading ? (isEditing ? '更新中...' : '发布中...') : (isEditing ? '更新文章' : '发布文章') }}
         </button>
       </div>
     </form>
@@ -63,7 +63,7 @@
 
 <script>
 import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import axios from '../axios'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
@@ -92,8 +92,15 @@ const editorOptions = {
 
 export default {
   name: 'CreateArticle',
-  setup() {
+  props: {
+    articleId: {
+      type: String,
+      default: ''
+    }
+  },
+  setup(props) {
     const router = useRouter()
+    const route = useRoute()
     const form = reactive({
       title: '',
       content: '',
@@ -109,6 +116,43 @@ export default {
     const coverImagePreview = ref('')
     const coverImageUploading = ref(false)
     const coverInput = ref(null)
+    const isEditing = ref(false)
+    const originalCoverImage = ref('')
+    
+    // 获取文章详情
+    const fetchArticleDetail = async (id) => {
+      if (!id) return
+      
+      try {
+        loading.value = true
+        const response = await axios.get(`/api/articles/${id}`)
+        const article = response.data || response
+        
+        // 填充表单数据
+        form.title = article.title || ''
+        form.content = article.content || ''
+        originalCoverImage.value = article.coverImage || ''
+        
+        // 设置封面图预览
+        if (article.coverImage) {
+          coverImagePreview.value = article.coverImage
+        }
+        
+        // 如果有Quill实例，设置内容
+        if (quillInstance) {
+          quillInstance.root.innerHTML = article.content || ''
+        }
+        
+        isEditing.value = true
+      } catch (err) {
+        console.error('获取文章详情失败:', err)
+        error.value = '获取文章详情失败，请稍后重试'
+        alert(error.value)
+        router.push('/profile')
+      } finally {
+        loading.value = false
+      }
+    }
 
     onMounted(() => {
       if (editor.value) {
@@ -118,6 +162,12 @@ export default {
         quillInstance.on('text-change', () => {
           form.content = quillInstance.root.innerHTML
         })
+        
+        // 检查是否为编辑模式
+        const id = props.articleId || route.params.id
+        if (id) {
+          fetchArticleDetail(id)
+        }
         
         // 自定义图片上传处理 - 使用本地预览，延迟上传
         quillInstance.getModule('toolbar').addHandler('image', function() {
@@ -162,11 +212,12 @@ export default {
                 quillInstance.insertEmbed(range.index, 'image', tempUrl);
                 // 为图片元素添加临时标记，方便后续替换
                 setTimeout(() => {
-                  const images = quillInstance.container.querySelectorAll('img[src="' + tempUrl + '"]');
-                  images.forEach(img => {
-                    img.setAttribute('data-temp-id', tempId);
+                  // 查找刚刚插入的图片元素
+                  const imgElements = document.querySelectorAll(`[src="${tempUrl}"]`);
+                  imgElements.forEach(img => {
+                    img.dataset.tempId = tempId;
                   });
-                }, 0);
+                }, 100);
                 // 移动光标到图片后面
                 quillInstance.setSelection(range.index + 1);
               };
@@ -228,14 +279,14 @@ export default {
     }
 
     const handleSubmit = async () => {
-      // 表单验证
+      // 验证表单
       if (!form.title.trim()) {
-        error.value = '请输入文章标题'
+        alert('请输入文章标题')
         return
       }
-
+      
       if (!form.content.trim()) {
-        error.value = '请输入文章内容'
+        alert('请输入文章内容')
         return
       }
       
@@ -243,15 +294,20 @@ export default {
       error.value = ''
       
       try {
+        const id = props.articleId || route.params.id
+        const isEditMode = isEditing.value || id
+        
         // 准备要提交的数据
         const articleData = {
           title: form.title,
           content: form.content,
-          coverImage: ''
+          coverImage: '',
+          removeCoverImage: false
         }
         
-        // 1. 上传封面图（如果有）
+        // 处理封面图
         if (form.coverImage && form.coverImage instanceof File) {
+          // 如果是新选择的图片文件，需要上传
           try {
             articleData.coverImage = await uploadFile(form.coverImage)
             console.log('封面图上传成功，URL:', articleData.coverImage)
@@ -260,9 +316,17 @@ export default {
             loading.value = false
             return
           }
+        } else if (isEditMode) {
+          // 编辑模式下，如果没有选择新图片但预览为空，说明要删除封面图
+          if (!coverImagePreview.value && originalCoverImage.value) {
+            articleData.removeCoverImage = true
+          } else if (!form.coverImage) {
+            // 如果没有选择新图片且预览不为空，保持原有封面图
+            articleData.coverImage = originalCoverImage.value
+          }
         }
         
-        // 2. 上传内容中的图片（如果有）
+        // 上传内容中的图片（如果有）
         let contentHtml = form.content
         if (form.tempImages.length > 0) {
           // 创建上传任务列表
@@ -271,38 +335,35 @@ export default {
               const actualUrl = await uploadFile(tempImage.file)
               console.log('内容图片上传成功，URL:', actualUrl)
               // 替换HTML中的临时URL - 避免使用正则表达式，直接进行字符串替换
-              // 因为临时URL可能包含正则表达式特殊字符
               contentHtml = contentHtml.split(tempImage.tempUrl).join(actualUrl)
               return actualUrl
             } catch (err) {
               console.error('内容图片上传失败:', err)
-              throw new Error('内容图片上传失败')
+              throw err
             }
           })
           
           // 等待所有图片上传完成
           await Promise.all(uploadPromises)
+          articleData.content = contentHtml
         }
         
-        // 更新内容为包含实际图片URL的HTML
-        articleData.content = contentHtml
-        
-        console.log('提交文章数据:', articleData)
-        
-        // 3. 提交文章数据
-        const response = await axios.post('/api/articles', articleData)
-        alert('文章发布成功！')
-        
-        // 跳转到文章详情页
-        if (response.data && response.data.id) {
-          router.push(`/article/${response.data.id}`)
+        // 根据模式调用不同的API
+        if (isEditMode) {
+          // 更新文章
+          await axios.put(`/api/articles/${id}`, articleData)
+          alert('文章更新成功')
         } else {
-          // 如果没有返回文章ID，则跳转到首页
-          router.push('/')
+          // 创建文章
+          await axios.post('/api/articles', articleData)
+          alert('文章发布成功')
         }
+        
+        router.push('/profile')
       } catch (err) {
-        error.value = err.response?.data?.message || err.message || '发布失败，请稍后重试'
-        console.error('发布文章失败:', err)
+        console.error(isEditing.value ? '更新文章失败:' : '发布文章失败:', err)
+        error.value = isEditing.value ? '更新文章失败，请稍后重试' : '发布文章失败，请稍后重试'
+        alert(error.value)
       } finally {
         loading.value = false
       }
@@ -374,14 +435,15 @@ export default {
       editor,
       loading,
       error,
-      handleSubmit,
-      cancel,
       coverImagePreview,
       coverImageUploading,
       coverInput,
+      isEditing,
+      handleSubmit,
       triggerCoverUpload,
       handleCoverImageUpload,
-      removeCoverImage
+      removeCoverImage,
+      cancel
     }
   }
 }

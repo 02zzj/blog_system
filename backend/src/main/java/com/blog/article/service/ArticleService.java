@@ -1,12 +1,14 @@
 package com.blog.article.service;
 
 import com.blog.article.dto.ArticleCreateDTO;
+import com.blog.article.dto.ArticleUpdateDTO;
 import com.blog.article.entity.Article;
 import com.blog.user.entity.User;
 import org.springframework.data.domain.Page;
 
 public interface ArticleService {
     Article createArticle(ArticleCreateDTO dto, User author);
+    Article updateArticle(Long id, ArticleUpdateDTO dto, User operator);
     Page<Article> getArticles(int page, int size, String sortField, String sortDirection);
     Page<Article> getArticlesByUserId(Long userId, int page, int size, String sortField, String sortDirection);
     // 根据关键词搜索文章

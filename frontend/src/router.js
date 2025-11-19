@@ -31,9 +31,10 @@ const routes = [
     component: Register
   },
   {
-    path: '/create',
+    path: '/create/:id?',
     name: 'CreateArticle',
     component: CreateArticle,
+    props: true,
     meta: {
       requiresAuth: true
     }

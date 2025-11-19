@@ -1,6 +1,7 @@
 package com.blog.article.controller;
 
 import com.blog.article.dto.ArticleCreateDTO;
+import com.blog.article.dto.ArticleUpdateDTO;
 import com.blog.article.service.ArticleService;
 import com.blog.common.ResponseResult;
 import com.blog.user.entity.User;
@@ -70,6 +71,12 @@ public class ArticleController {
     @GetMapping("/{id}")
     public ResponseResult<Object> detail(@PathVariable Long id) {
         return ResponseResult.success(articleService.getArticle(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseResult<Object> update(@PathVariable Long id, @RequestBody ArticleUpdateDTO dto) {
+        User currentUser = userService.getCurrentUser();
+        return ResponseResult.success(articleService.updateArticle(id, dto, currentUser));
     }
 
     @DeleteMapping("/{id}")

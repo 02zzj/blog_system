@@ -33,16 +33,17 @@
         <div v-if="articles.length === 0" class="no-articles">暂无文章</div>
         <div v-else class="article-list">
           <div v-for="article in articles" :key="article.id" class="article-card">
-            <router-link :to="'/article/' + article.id" class="article-link">
-              <h3 class="article-title">{{ article.title }}</h3>
-              <div class="article-meta">
-                <span class="date">{{ formatDate(article.updatedAt) }}</span>
-              </div>
-            </router-link>
-            <div class="article-actions">
-              <button @click="deleteArticle(article.id)" class="delete-btn">删除</button>
-            </div>
+        <router-link :to="'/article/' + article.id" class="article-link">
+          <h3 class="article-title">{{ article.title }}</h3>
+          <div class="article-meta">
+            <span class="date">{{ formatDate(article.updatedAt) }}</span>
           </div>
+        </router-link>
+        <div class="article-actions">
+          <router-link :to="'/create/' + article.id" class="edit-btn">编辑</router-link>
+          <button @click="deleteArticle(article.id)" class="delete-btn">删除</button>
+        </div>
+      </div>
         </div>
         
         <div class="pagination" v-if="articles.length > 0">
@@ -332,6 +333,25 @@ export default {
   top: 16px;
   right: 16px;
   z-index: 1;
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn {
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.edit-btn:hover {
+  background-color: #40a9ff;
+  color: white;
 }
 
 .delete-btn {
