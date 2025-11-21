@@ -79,25 +79,34 @@ export default {
       error.value = ''
       
       try {
-        const response = await axios.post('/api/users/login', form.value)
+        // 第一步：登录获取token
+        const loginResponse = await axios.post('/api/users/login', form.value)
         
-        // 保存token和用户信息到localStorage
-        // 根据后端API结构调整数据获取方式
-        if (response.data && response.data.token) {
-          localStorage.setItem('token', response.data.token)
+        // 保存token
+        const token = loginResponse.token || loginResponse.data?.token
+        if (token) {
+          localStorage.setItem('token', token)
+          // 更新axios实例的认证头
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+        } else {
+          throw new Error('登录失败，未返回token')
         }
         
-        // 保存用户信息
-        if (response.data && response.data.data) {
-          localStorage.setItem('user', JSON.stringify(response.data.data))
-        }
+        // 第二步：使用token获取用户信息
+        const userResponse = await axios.get('/api/users/me')
+        const userInfo = userResponse.data || userResponse
         
-        // 更新axios实例的认证头
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data?.token || ''}`
+        // 保存用户信息到localStorage
+        localStorage.setItem('user', JSON.stringify(userInfo))
+        console.log('User logged in successfully, saved user info:', userInfo)
         
         // 跳转到首页
         router.push('/')
       } catch (err) {
+        // 清除可能保存的token
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        
         // 优先使用后端返回的消息，否则显示自定义消息
         const defaultMessage = '邮箱或密码错误'
         error.value = err.response?.data?.message?.includes('用户名') 
