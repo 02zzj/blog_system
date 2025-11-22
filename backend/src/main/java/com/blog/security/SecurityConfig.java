@@ -32,11 +32,18 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                        .antMatchers("/api/users/send-verification", "/api/users/register", "/api/users/login").permitAll()
+                        .antMatchers("/api/users/send-verification", "/api/users/register", "/api/users/login", 
+                                "/api/users/forgot-password/send-code", "/api/users/forgot-password/verify-code", 
+                                "/api/users/forgot-password/reset").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/articles", "/api/articles/*").permitAll()
+                        .antMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
                         // 允许对上传文件的公共访问
                         .antMatchers("/uploads/**").permitAll()
-                        .antMatchers("/api/users/me", "/api/articles/*").authenticated()
+                        .antMatchers("/api/users/me").authenticated()
+                        // 仅POST、PUT、DELETE方法需要认证
+                        .antMatchers(HttpMethod.POST, "/api/articles/*", "/api/comments/**").authenticated()
+                        .antMatchers(HttpMethod.PUT, "/api/articles/*", "/api/comments/**").authenticated()
+                        .antMatchers(HttpMethod.DELETE, "/api/articles/*", "/api/comments/**").authenticated()
                         .anyRequest().authenticated()
                         .and()
                 .sessionManagement()

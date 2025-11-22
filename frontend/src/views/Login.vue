@@ -49,6 +49,10 @@
       <div class="register-link">
         还没有账号？<router-link to="/register">立即注册</router-link>
       </div>
+      
+      <div class="forgot-password-link">
+        <router-link to="/forgot-password">忘记密码？</router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -255,10 +259,20 @@ input[type="password"]::-ms-clear {
   text-align: center;
   margin-top: 20px;
   font-size: 14px;
-  color: #666;
 }
 
 .register-link a {
+  color: #1890ff;
+  text-decoration: none;
+}
+
+.forgot-password-link {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.forgot-password-link a {
   color: #1890ff;
   text-decoration: none;
 }

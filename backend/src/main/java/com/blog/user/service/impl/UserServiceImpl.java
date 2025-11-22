@@ -1,8 +1,11 @@
 package com.blog.user.service.impl;
 
 
+import com.blog.user.dto.ForgotPasswordDTO;
+import com.blog.user.dto.ResetPasswordDTO;
 import com.blog.user.dto.UserLoginDTO;
 import com.blog.user.dto.UserRegisterDTO;
+import com.blog.user.dto.VerifyCodeDTO;
 import com.blog.user.entity.User;
 import com.blog.user.repository.UserRepository;
 import com.blog.user.service.UserService;
@@ -158,5 +161,83 @@ public class UserServiceImpl implements UserService {
         String email = authentication.getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
+    }
+
+    @Override
+    public void sendForgotPasswordCode(ForgotPasswordDTO forgotPasswordDTO) {
+        String email = forgotPasswordDTO.getEmail();
+        
+        // 检查用户是否存在
+        if (!userRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("用户不存在");
+        }
+        
+        // 检查是否在冷却期内
+        if (isInCoolingPeriod(email)) {
+            throw new RuntimeException("验证码发送过于频繁，请稍后再试");
+        }
+        
+        // 生成6位验证码
+        String code = String.format("%06d", new Random().nextInt(1000000));
+        
+        // 存储验证码和创建时间
+        verificationCodes.put(email, code);
+        verificationCodeCreationTimes.put(email, System.currentTimeMillis());
+        
+        // 发送邮件
+        sendEmail(email, "博客系统重置密码验证码", "您的重置密码验证码是: " + code + "，有效期5分钟，请及时使用。");
+        
+        System.out.println("向邮箱 " + email + " 发送重置密码验证码: " + code);
+    }
+
+    @Override
+    public boolean verifyForgotPasswordCode(VerifyCodeDTO verifyCodeDTO) {
+        String email = verifyCodeDTO.getEmail();
+        String code = verifyCodeDTO.getCode();
+        
+        // 检查验证码是否存在
+        String storedCode = verificationCodes.get(email);
+        if (storedCode == null || !storedCode.equals(code)) {
+            return false;
+        }
+        
+        // 检查验证码是否过期
+        if (isVerificationCodeExpired(email)) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
+        String email = resetPasswordDTO.getEmail();
+        String code = resetPasswordDTO.getCode();
+        String newPassword = resetPasswordDTO.getNewPassword();
+        String confirmPassword = resetPasswordDTO.getConfirmPassword();
+        
+        // 验证两次密码是否一致
+        if (!newPassword.equals(confirmPassword)) {
+            throw new RuntimeException("两次输入的密码不一致");
+        }
+        
+        // 验证验证码
+        VerifyCodeDTO verifyCodeDTO = new VerifyCodeDTO();
+        verifyCodeDTO.setEmail(email);
+        verifyCodeDTO.setCode(code);
+        if (!verifyForgotPasswordCode(verifyCodeDTO)) {
+            throw new RuntimeException("验证码错误或已过期");
+        }
+        
+        // 获取用户并更新密码
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("用户不存在"));
+        
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        
+        // 重置成功后移除验证码
+        verificationCodes.remove(email);
+        verificationCodeCreationTimes.remove(email);
     }
 }

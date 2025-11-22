@@ -7,6 +7,7 @@ const Login = () => import('./views/Login.vue')
 const Register = () => import('./views/Register.vue')
 const CreateArticle = () => import('./views/CreateArticle.vue')
 const Profile = () => import('./views/Profile.vue')
+const ForgotPassword = () => import('./views/ForgotPassword.vue')
 
 const routes = [
   {
@@ -29,6 +30,11 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: Register
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: ForgotPassword
   },
   {
     path: '/create/:id?',
