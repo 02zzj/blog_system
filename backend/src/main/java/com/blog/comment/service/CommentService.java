@@ -15,6 +15,12 @@ public interface CommentService {
     // 根据用户ID获取评论列表
     Page<CommentDTO> getCommentsByUserId(Long userId, Pageable pageable);
     
+    // 获取所有评论（管理员功能）
+    Page<CommentDTO> getAllComments(Pageable pageable);
+    
+    // 搜索评论
+    Page<CommentDTO> searchComments(String keyword, String searchType, Pageable pageable);
+    
     // 删除评论（检查权限）
     void deleteComment(Long commentId, Long userId);
     

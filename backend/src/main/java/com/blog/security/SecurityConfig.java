@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                         .antMatchers("/api/users/send-verification", "/api/users/register", "/api/users/login", 
                                 "/api/users/forgot-password/send-code", "/api/users/forgot-password/verify-code", 
-                                "/api/users/forgot-password/reset").permitAll()
+                                "/api/users/forgot-password/reset","/api/users/nickname/available").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/articles", "/api/articles/*").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
                         // 允许对上传文件的公共访问

@@ -7,6 +7,7 @@ import com.blog.article.repository.ArticleRepository;
 import com.blog.article.service.ArticleService;
 import com.blog.file.util.FileUtils;
 import com.blog.user.entity.User;
+import com.blog.user.util.UserRoleUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,8 +41,8 @@ public class ArticleServiceImpl implements ArticleService {
     public Article updateArticle(Long id, ArticleUpdateDTO dto, User operator) {
         Article article = getArticle(id);
         
-        // 验证是否是作者本人
-        if (!article.getAuthor().getId().equals(operator.getId())) {
+        // 验证用户是否有权限修改此文章
+        if (!UserRoleUtil.hasPermission(operator, article.getAuthor().getId())) {
             throw new RuntimeException("无权修改此文章");
         }
         
@@ -53,16 +54,25 @@ public class ArticleServiceImpl implements ArticleService {
             article.setTitle(dto.getTitle());
         }
         if (dto.getContent() != null) {
-            // 如果内容改变，需要处理旧内容中的图片
+            // 如果内容改变，需要处理图片
             if (!article.getContent().equals(dto.getContent())) {
-                // 清理旧内容中的图片
-                List<String> imageUrls = fileUtils.extractImageUrlsFromHtml(article.getContent());
-                for (String imageUrl : imageUrls) {
-                    String filename = fileUtils.extractFilenameFromUrl(imageUrl);
-                    if (filename != null) {
-                        fileUtils.deleteFile(filename);
+                // 从旧内容中提取图片URL
+                List<String> oldImageUrls = fileUtils.extractImageUrlsFromHtml(article.getContent());
+                // 从新内容中提取图片URL
+                List<String> newImageUrls = fileUtils.extractImageUrlsFromHtml(dto.getContent());
+                
+                // 只删除旧内容中有但新内容中不存在的图片（不再使用的图片）
+                for (String oldImageUrl : oldImageUrls) {
+                    // 检查这张图片是否在新内容中不再使用
+                    if (!newImageUrls.contains(oldImageUrl)) {
+                        String filename = fileUtils.extractFilenameFromUrl(oldImageUrl);
+                        if (filename != null) {
+                            fileUtils.deleteFile(filename);
+                        }
                     }
                 }
+                
+                // 更新文章内容
                 article.setContent(dto.getContent());
             }
         }
@@ -230,8 +240,8 @@ public class ArticleServiceImpl implements ArticleService {
     public void deleteArticle(Long id, User operator) {
         Article article = getArticle(id);
         
-        // 验证是否是作者本人
-        if (!article.getAuthor().getId().equals(operator.getId())) {
+        // 验证用户是否有权限删除此文章
+        if (!UserRoleUtil.hasPermission(operator, article.getAuthor().getId())) {
             throw new RuntimeException("无权删除此文章");
         }
         

@@ -326,8 +326,10 @@ export default {
           }
         }
         
-        // 上传内容中的图片（如果有）
+        // 上传内容中的图片
         let contentHtml = form.content
+        
+        // 无论是否有新图片，都需要确保内容被正确设置
         if (form.tempImages.length > 0) {
           // 创建上传任务列表
           const uploadPromises = form.tempImages.map(async (tempImage) => {
@@ -345,8 +347,10 @@ export default {
           
           // 等待所有图片上传完成
           await Promise.all(uploadPromises)
-          articleData.content = contentHtml
         }
+        
+        // 确保更新文章内容（包含原有图片和新上传的图片）
+        articleData.content = contentHtml
         
         // 根据模式调用不同的API
         if (isEditMode) {

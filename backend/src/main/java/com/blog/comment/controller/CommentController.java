@@ -59,6 +59,24 @@ public class CommentController {
         return ResponseResult.success(commentService.getCommentsByUserId(userId, pageable));
     }
 
+    // 获取所有评论（管理员功能）
+    @GetMapping
+    public ResponseResult<Page<?>> getAllComments(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "all") String searchType) {
+        // 创建Pageable对象，注意Spring Data JPA页码从0开始
+        Pageable pageable = PageRequest.of(page - 1, size);
+        
+        // 如果有关键词，则执行搜索，否则获取所有评论
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            return ResponseResult.success(commentService.searchComments(keyword.trim(), searchType, pageable));
+        } else {
+            return ResponseResult.success(commentService.getAllComments(pageable));
+        }
+    }
+
     // 删除评论
     @DeleteMapping("/{id}")
     public ResponseResult<Void> delete(@PathVariable Long id) {

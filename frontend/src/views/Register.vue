@@ -5,13 +5,22 @@
       <form @submit.prevent="handleRegister">
         <div class="form-group">
           <label for="nickname">昵称</label>
-          <input
-            type="text"
-            id="nickname"
-            v-model="form.nickname"
-            placeholder="请输入昵称"
-            required
-          />
+          <div class="input-with-feedback">
+            <input 
+              type="text" 
+              id="nickname" 
+              v-model="form.nickname" 
+              placeholder="请输入昵称"
+              required
+              :class="{ 'input-error': nicknameError, 'input-success': nicknameAvailable === true && form.nickname }"
+            />
+            <div v-if="nicknameAvailable === true && form.nickname" class="validation-success">
+              昵称可用
+            </div>
+            <div v-if="nicknameError" class="validation-error">
+              {{ nicknameError }}
+            </div>
+          </div>
         </div>
         
         <div class="form-group">
@@ -108,7 +117,7 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from '../axios'
 
@@ -130,6 +139,40 @@ export default {
     const countdown = ref(0)
     const showPassword = ref(false)
     const showConfirmPassword = ref(false)
+    const nicknameAvailable = ref(null) // null: 未验证, true: 可用, false: 不可用
+    const nicknameError = ref('')
+    let nicknameCheckTimer = null
+
+    const checkNickname = async () => {
+      if (!form.nickname.trim()) {
+        nicknameAvailable.value = null
+        nicknameError.value = ''
+        return
+      }
+      
+      try {
+        const response = await axios.get('/api/users/nickname/available', {
+          params: { nickname: form.nickname }
+        })
+        nicknameAvailable.value = response.data.available
+        nicknameError.value = nicknameAvailable.value ? '' : '该昵称已被使用'
+      } catch (error) {
+        console.error('检查昵称失败:', error)
+        nicknameAvailable.value = null
+        nicknameError.value = '检查昵称失败，请稍后重试'
+      }
+    }
+
+    // 防抖处理，避免频繁请求
+    const debouncedCheckNickname = () => {
+      clearTimeout(nicknameCheckTimer)
+      nicknameCheckTimer = setTimeout(checkNickname, 500)
+    }
+
+    // 监听昵称输入变化
+    watch(() => form.nickname, () => {
+      debouncedCheckNickname()
+    })
     
     const togglePasswordVisibility = (field) => {
       if (field === 'password') {
@@ -228,6 +271,8 @@ export default {
       countdown,
       showPassword,
       showConfirmPassword,
+      nicknameAvailable,
+      nicknameError,
       sendCode,
       togglePasswordVisibility,
       handleRegister
@@ -294,6 +339,33 @@ input[type="password"]::-ms-clear {
 .form-group input:focus {
     outline: none;
     border-color: #1890ff;
+  }
+  
+  /* 输入验证样式 */
+  .input-error {
+    border-color: #ff4d4f;
+  }
+  
+  .input-success {
+    border-color: #52c41a;
+  }
+  
+  .input-with-feedback {
+    position: relative;
+  }
+  
+  .validation-success,
+  .validation-error {
+    font-size: 14px;
+    margin-top: 5px;
+  }
+  
+  .validation-success {
+    color: #52c41a;
+  }
+  
+  .validation-error {
+    color: #ff4d4f;
   }
   
   .password-input-container {

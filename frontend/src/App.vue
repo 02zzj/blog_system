@@ -30,7 +30,30 @@
               <router-link to="/login" class="nav-link">登录</router-link>
               <router-link to="/register" class="nav-link">注册</router-link>
             </div>
-            <button v-if="isLoggedIn" @click="logout" class="logout-btn">退出</button>
+            
+            <!-- 用户头像和昵称，点击显示下拉菜单 -->
+            <div v-if="isLoggedIn" class="user-menu-container">
+              <div class="user-info" @click="toggleUserMenu">
+                <img 
+                  :src="user?.avatar || '/src/assets/images/avatar.jpg'" 
+                  alt="用户头像"
+                  class="user-avatar"
+                  @error="$event.target.src = '/src/assets/images/avatar.jpg'"
+                >
+                <span class="user-nickname">{{ user?.nickname || '用户' }}</span>
+                <span class="dropdown-arrow" :class="{ 'active': showUserMenu }"></span>
+              </div>
+              
+              <!-- 下拉菜单 -->
+              <div v-if="showUserMenu" class="user-dropdown-menu">
+                <router-link to="/profile" class="dropdown-item" @click="showUserMenu = false">个人中心</router-link>
+                <router-link to="/create" class="dropdown-item" @click="showUserMenu = false">写文章</router-link>
+                <!-- 管理员中心选项，仅对管理员显示 -->
+                <router-link v-if="user?.role === 'ADMIN'" to="/admin/dashboard" class="dropdown-item" @click="showUserMenu = false">管理员中心</router-link>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item logout-item" @click="logout">退出登录</button>
+              </div>
+            </div>
           </div>
         </div>
       </nav>
@@ -63,6 +86,8 @@ export default {
   name: 'App',
   setup() {
     const isLoggedIn = ref(false)
+    const user = ref(null)
+    const showUserMenu = ref(false)
     const router = useRouter()
     const homeResetEvent = ref(false)
     
@@ -76,13 +101,39 @@ export default {
     const checkLoginStatus = () => {
       const token = localStorage.getItem('token')
       isLoggedIn.value = !!token
+      // 获取用户信息
+      if (isLoggedIn.value) {
+        try {
+          const userStr = localStorage.getItem('user')
+          user.value = userStr ? JSON.parse(userStr) : null
+        } catch (e) {
+          console.error('解析用户信息失败:', e)
+          user.value = null
+        }
+      } else {
+        user.value = null
+      }
     }
 
     const logout = () => {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       isLoggedIn.value = false
+      user.value = null
+      showUserMenu.value = false
       router.push('/')
+    }
+    
+    // 切换用户菜单显示状态
+    const toggleUserMenu = () => {
+      showUserMenu.value = !showUserMenu.value
+    }
+    
+    // 点击其他地方关闭用户菜单
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.user-menu-container')) {
+        showUserMenu.value = false
+      }
     }
 
     onMounted(() => {
@@ -98,6 +149,9 @@ export default {
       router.afterEach(() => {
         checkLoginStatus()
       })
+      
+      // 监听点击事件，点击其他地方关闭用户菜单
+      document.addEventListener('click', handleClickOutside)
     })
 
     // 处理首页链接点击事件，确保重置搜索状态
@@ -149,7 +203,10 @@ export default {
     
     return {
       isLoggedIn,
+      user,
+      showUserMenu,
       logout,
+      toggleUserMenu,
       handleHomeClick,
       searchKeyword,
       searchType,
@@ -176,13 +233,13 @@ export default {
 }
 
 .nav {
-  padding: 20px 0;
+  padding: 15px 0; /* 调整导航栏垂直内边距 */
 }
 
 .nav .container {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px; /* 减小项目间距 */
 }
 
 .logo {
@@ -199,10 +256,10 @@ export default {
 }
 
 .search-type-select {
-  padding: 6px 12px;
+  padding: 10px 16px; /* 进一步增大内边距 */
   border: 1px solid #d9d9d9;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 17px; /* 进一步增大字体 */
   outline: none;
   background-color: white;
   cursor: pointer;
@@ -215,10 +272,10 @@ export default {
 
 .search-input {
   flex: 1;
-  padding: 6px 12px;
+  padding: 10px 16px; /* 进一步增大内边距 */
   border: 1px solid #d9d9d9;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 18px; /* 进一步增大字体 */
   outline: none;
 }
 
@@ -228,12 +285,12 @@ export default {
 }
 
 .search-button {
-  padding: 6px 16px;
+  padding: 10px 20px; /* 进一步增大内边距 */
   background-color: #1890ff;
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 18px; /* 进一步增大字体 */
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -243,7 +300,7 @@ export default {
 }
 
 .logo {
-  font-size: 24px;
+  font-size: 32px; /* 进一步增大logo字体 */
   font-weight: bold;
   color: #333;
   text-decoration: none;
@@ -251,14 +308,15 @@ export default {
 
 .nav-links {
   display: flex;
-  gap: 20px;
+  gap: 15px; /* 减小导航链接间距 */
   align-items: center;
 }
 
 .nav-link {
   color: #333;
   text-decoration: none;
-  padding: 8px 16px;
+  padding: 8px 14px; /* 增大内边距 */
+  font-size: 18px; /* 进一步增大字体 */
   border-radius: 4px;
   transition: background-color 0.3s;
 }
@@ -279,6 +337,105 @@ export default {
 
 .logout-btn:hover {
   background-color: #ff7875;
+}
+
+/* 用户菜单样式 */
+.user-menu-container {
+  position: relative;
+  display: inline-block;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px; /* 减小内边距 */
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  position: relative; /* 为下拉菜单居中定位做准备 */
+}
+
+.user-info:hover {
+  background-color: #f5f5f5;
+}
+
+.user-avatar {
+  width: 40px; /* 进一步增大头像 */
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e8e8e8;
+}
+
+.user-nickname {
+  font-size: 18px; /* 进一步增大字体 */
+  color: #333;
+  white-space: nowrap;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-arrow {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent; /* 进一步增大箭头 */
+  border-right: 6px solid transparent;
+  border-top: 6px solid #666;
+  margin-left: 4px;
+  transition: transform 0.3s;
+}
+
+.dropdown-arrow.active {
+  transform: rotate(180deg);
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%; /* 居中对齐 */
+  transform: translateX(-50%); /* 向左移动50%宽度实现居中 */
+  min-width: 180px;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  z-index: 1000;
+  margin-top: 4px;
+  padding: 6px 0;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 12px 20px; /* 进一步增大内边距 */
+  border: none;
+  background: none;
+  text-align: center; /* 修改为居中显示 */
+  font-size: 18px; /* 进一步增大字体 */
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown-divider {
+  height: 1px;
+  margin: 4px 0;
+  background-color: #e8e8e8;
+}
+
+.logout-item {
+  color: #ff4d4f;
+}
+
+.logout-item:hover {
+  color: #ff4d4f;
+  background-color: #fff2f0;
 }
 
 .main {

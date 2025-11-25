@@ -21,6 +21,21 @@ public class User {
     private String nickname;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    
+    // 用户简介
+    @Column(columnDefinition = "VARCHAR(500)")
+    private String introduction;
+    
+    // 头像URL
+    private String avatar;
+    
+    // 用户角色：USER(普通用户), ADMIN(管理员)
+    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
+    private String role = "USER";
+    
+    // 账号状态：true(启用), false(禁用)
+    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean enabled = true;
 
     @PrePersist
     protected void onCreate() {
