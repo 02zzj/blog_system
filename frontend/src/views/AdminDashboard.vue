@@ -1,39 +1,57 @@
 <template>
+  <!-- 玄幻科技背景装饰 -->
+  <div class="cyber-bg-wrapper">
+    <div class="cyber-grid"></div>
+    <div class="cyber-particles"></div>
+    <div class="cyber-gradient-overlay"></div>
+    <div class="cyber-glow-lines"></div>
+  </div>
+  
   <div class="admin-container">
-    <!-- 左侧导航栏 -->
-    <aside class="admin-sidebar">
-      <div class="sidebar-header">
-        <h2>管理中心</h2>
-      </div>
-      <nav class="sidebar-nav">
-        <ul>
-          <li class="nav-item" :class="{ active: activeTab === 'statistics' }">
-            <a @click="switchTab('statistics')">
-              <span class="nav-icon">📊</span>
-              <span class="nav-text">统计概览</span>
-            </a>
-          </li>
-          <li class="nav-item" :class="{ active: activeTab === 'articles' }">
-            <a @click="switchTab('articles')">
-              <span class="nav-icon">📝</span>
-              <span class="nav-text">文章管理</span>
-            </a>
-          </li>
-          <li class="nav-item" :class="{ active: activeTab === 'comments' }">
-            <a @click="switchTab('comments')">
-              <span class="nav-icon">💬</span>
-              <span class="nav-text">评论管理</span>
-            </a>
-          </li>
-          <li class="nav-item" :class="{ active: activeTab === 'users' }">
-            <a @click="switchTab('users')">
-              <span class="nav-icon">👥</span>
-              <span class="nav-text">用户管理</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </aside>
+      <!-- 左侧导航栏 -->
+      <aside class="admin-sidebar cyber-sidebar">
+        <div class="sidebar-header cyber-sidebar-header">
+          <div class="cyber-logo">
+            <span class="logo-accent">◈</span>
+            <h2>管理中心</h2>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <ul>
+            <li class="nav-item cyber-nav-item" :class="{ active: activeTab === 'statistics' }">
+              <a @click="switchTab('statistics')" class="cyber-nav-link">
+                <span class="nav-icon cyber-icon">📊</span>
+                <span class="nav-text">统计概览</span>
+                <div class="cyber-glow-effect"></div>
+              </a>
+            </li>
+            <li class="nav-item cyber-nav-item" :class="{ active: activeTab === 'articles' }">
+              <a @click="switchTab('articles')" class="cyber-nav-link">
+                <span class="nav-icon cyber-icon">📝</span>
+                <span class="nav-text">文章管理</span>
+                <div class="cyber-glow-effect"></div>
+              </a>
+            </li>
+            <li class="nav-item cyber-nav-item" :class="{ active: activeTab === 'comments' }">
+              <a @click="switchTab('comments')" class="cyber-nav-link">
+                <span class="nav-icon cyber-icon">💬</span>
+                <span class="nav-text">评论管理</span>
+                <div class="cyber-glow-effect"></div>
+              </a>
+            </li>
+            <li class="nav-item cyber-nav-item" :class="{ active: activeTab === 'users' }">
+              <a @click="switchTab('users')" class="cyber-nav-link">
+                <span class="nav-icon cyber-icon">👥</span>
+                <span class="nav-text">用户管理</span>
+                <div class="cyber-glow-effect"></div>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <div class="cyber-sidebar-footer">
+          <div class="cyber-footer-glow"></div>
+        </div>
+      </aside>
     
     <!-- 主内容区域 -->
     <main class="admin-main">
@@ -137,11 +155,19 @@
         <div class="management-header">
           <h2>文章列表</h2>
           <div class="search-bar">
-            <select v-model="articleSearchType" @change="handleSearch" style="margin-right: 10px; padding: 6px;">
-              <option value="title_content">标题/内容</option>
-              <option value="author">作者名</option>
-              <option value="all">全部</option>
-            </select>
+            <div class="cyber-dropdown-container">
+              <div class="cyber-dropdown">
+                <div class="cyber-dropdown-select" @click="toggleArticleSearchTypeDropdown">
+                  <span>{{ getArticleSearchTypeText(articleSearchType) }}</span>
+                  <span class="cyber-dropdown-arrow" :class="{ 'rotate': showArticleSearchTypeDropdown }">▼</span>
+                </div>
+                <div class="cyber-dropdown-menu" v-if="showArticleSearchTypeDropdown">
+                  <div class="cyber-dropdown-item" @click="selectArticleSearchType('title_content')">标题/内容</div>
+                  <div class="cyber-dropdown-item" @click="selectArticleSearchType('author')">作者名</div>
+                  <div class="cyber-dropdown-item" @click="selectArticleSearchType('all')">全部</div>
+                </div>
+              </div>
+            </div>
             <input 
               type="text" 
               v-model="searchKeyword" 
@@ -254,11 +280,19 @@
             <div class="management-header">
               <h2>评论列表</h2>
               <div class="search-bar">
-                <select v-model="commentSearchType" @change="handleCommentSearch" style="margin-right: 10px; padding: 6px;">
-                  <option value="content">评论内容</option>
-                  <option value="author">评论者</option>
-                  <option value="all">全部</option>
-                </select>
+                <div class="cyber-dropdown-container">
+                  <div class="cyber-dropdown">
+                    <div class="cyber-dropdown-select" @click="toggleCommentSearchTypeDropdown">
+                      <span>{{ getCommentSearchTypeText(commentSearchType) }}</span>
+                      <span class="cyber-dropdown-arrow" :class="{ 'rotate': showCommentSearchTypeDropdown }">▼</span>
+                    </div>
+                    <div class="cyber-dropdown-menu" v-if="showCommentSearchTypeDropdown">
+                      <div class="cyber-dropdown-item" @click="selectCommentSearchType('content')">评论内容</div>
+                      <div class="cyber-dropdown-item" @click="selectCommentSearchType('author')">评论者</div>
+                      <div class="cyber-dropdown-item" @click="selectCommentSearchType('all')">全部</div>
+                    </div>
+                  </div>
+                </div>
                 <input 
                   type="text" 
                   v-model="commentSearchKeyword" 
@@ -352,11 +386,19 @@
             <div class="management-header">
               <h2>用户列表</h2>
               <div class="search-bar">
-                <select v-model="userSearchType" @change="handleUserSearch" style="margin-right: 10px; padding: 6px;">
-                  <option value="all">全部</option>
-                  <option value="nickname">昵称</option>
-                  <option value="email">邮箱</option>
-                </select>
+                <div class="cyber-dropdown-container">
+                  <div class="cyber-dropdown">
+                    <div class="cyber-dropdown-select" @click="toggleUserSearchTypeDropdown">
+                      <span>{{ getUserSearchTypeText(userSearchType) }}</span>
+                      <span class="cyber-dropdown-arrow" :class="{ 'rotate': showUserSearchTypeDropdown }">▼</span>
+                    </div>
+                    <div class="cyber-dropdown-menu" v-if="showUserSearchTypeDropdown">
+                      <div class="cyber-dropdown-item" @click="selectUserSearchType('all')">全部</div>
+                      <div class="cyber-dropdown-item" @click="selectUserSearchType('nickname')">昵称</div>
+                      <div class="cyber-dropdown-item" @click="selectUserSearchType('email')">邮箱</div>
+                    </div>
+                  </div>
+                </div>
                 <input 
                   type="text" 
                   v-model="userSearchKeyword" 
@@ -499,7 +541,11 @@ export default {
         userTotalPages: 1,
         userPageSize: 20,
         currentUserId: null, // 当前登录用户ID
-        isActiveUsersFilter: false // 是否只显示活跃用户
+        isActiveUsersFilter: false, // 是否只显示活跃用户
+        // 下拉菜单显示状态
+        showArticleSearchTypeDropdown: false,
+        showCommentSearchTypeDropdown: false,
+        showUserSearchTypeDropdown: false
     }
   },
   mounted() {
@@ -509,6 +555,12 @@ export default {
     this.fetchActiveUserCount()
     // 获取当前登录用户ID
     this.getCurrentUserId()
+    // 添加全局点击事件监听器，用于关闭下拉菜单
+    document.addEventListener('click', this.handleGlobalClick);
+  },
+  beforeUnmount() {
+    // 移除全局点击事件监听器
+    document.removeEventListener('click', this.handleGlobalClick);
   },
   computed: {
     filteredArticles() {
@@ -534,6 +586,78 @@ export default {
         }
       },
       
+      // 获取搜索类型文本
+      getArticleSearchTypeText(type) {
+        const typeMap = {
+          'title_content': '标题/内容',
+          'author': '作者名',
+          'all': '全部'
+        };
+        return typeMap[type] || '全部';
+      },
+      
+      getCommentSearchTypeText(type) {
+        const typeMap = {
+          'content': '评论内容',
+          'author': '评论者',
+          'all': '全部'
+        };
+        return typeMap[type] || '全部';
+      },
+      
+      getUserSearchTypeText(type) {
+        const typeMap = {
+          'all': '全部',
+          'nickname': '昵称',
+          'email': '邮箱'
+        };
+        return typeMap[type] || '全部';
+      },
+      
+      // 切换下拉菜单显示状态
+      toggleArticleSearchTypeDropdown() {
+        // 关闭其他下拉菜单
+        this.showCommentSearchTypeDropdown = false;
+        this.showUserSearchTypeDropdown = false;
+        // 切换当前下拉菜单
+        this.showArticleSearchTypeDropdown = !this.showArticleSearchTypeDropdown;
+      },
+      
+      toggleCommentSearchTypeDropdown() {
+        // 关闭其他下拉菜单
+        this.showArticleSearchTypeDropdown = false;
+        this.showUserSearchTypeDropdown = false;
+        // 切换当前下拉菜单
+        this.showCommentSearchTypeDropdown = !this.showCommentSearchTypeDropdown;
+      },
+      
+      toggleUserSearchTypeDropdown() {
+        // 关闭其他下拉菜单
+        this.showArticleSearchTypeDropdown = false;
+        this.showCommentSearchTypeDropdown = false;
+        // 切换当前下拉菜单
+        this.showUserSearchTypeDropdown = !this.showUserSearchTypeDropdown;
+      },
+      
+      // 选择搜索类型
+      selectArticleSearchType(type) {
+        this.articleSearchType = type;
+        this.showArticleSearchTypeDropdown = false;
+        this.handleSearch();
+      },
+      
+      selectCommentSearchType(type) {
+        this.commentSearchType = type;
+        this.showCommentSearchTypeDropdown = false;
+        this.handleCommentSearch();
+      },
+      
+      selectUserSearchType(type) {
+        this.userSearchType = type;
+        this.showUserSearchTypeDropdown = false;
+        this.handleUserSearch();
+      },
+      
       // 获取当前登录用户ID
       getCurrentUserId() {
         try {
@@ -544,6 +668,26 @@ export default {
           }
         } catch (e) {
           console.error('Error parsing user from localStorage:', e)
+        }
+      },
+      
+      // 全局点击处理，用于关闭下拉菜单
+      handleGlobalClick(event) {
+        // 检查点击是否发生在下拉菜单内部
+        const dropdownElements = document.querySelectorAll('.cyber-dropdown-container');
+        let clickedInsideDropdown = false;
+        
+        dropdownElements.forEach(element => {
+          if (element.contains(event.target)) {
+            clickedInsideDropdown = true;
+          }
+        });
+        
+        // 如果点击不在下拉菜单内部，则关闭所有下拉菜单
+        if (!clickedInsideDropdown) {
+          this.showArticleSearchTypeDropdown = false;
+          this.showCommentSearchTypeDropdown = false;
+          this.showUserSearchTypeDropdown = false;
         }
       },
       
@@ -1031,27 +1175,165 @@ export default {
 </script>
 
 <style scoped>
+/* 玄幻科技背景装饰 */
+.cyber-bg-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--main-bg);
+  overflow: hidden;
+  z-index: -1;
+}
+
+/* 网格背景 */
+.cyber-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(var(--grid-color, rgba(0, 174, 255, 0.1)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color, rgba(0, 174, 255, 0.1)) 1px, transparent 1px);
+  background-size: 30px 30px;
+  animation: cyberGridMove 20s linear infinite;
+}
+
+@keyframes cyberGridMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(30px, 30px); }
+}
+
+/* 粒子效果 */
+.cyber-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, var(--highlight), transparent),
+    radial-gradient(2px 2px at 40px 70px, var(--secondary-highlight, rgba(138, 43, 226, 0.8)), transparent),
+    radial-gradient(1px 1px at 90px 40px, var(--highlight), transparent),
+    radial-gradient(1px 1px at 130px 80px, var(--secondary-highlight, rgba(138, 43, 226, 0.8)), transparent),
+    radial-gradient(2px 2px at 160px 30px, var(--highlight), transparent);
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: cyberParticlesMove 10s linear infinite;
+  opacity: 0.5;
+}
+
+@keyframes cyberParticlesMove {
+  0% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-20px) translateX(10px); }
+  100% { transform: translateY(0) translateX(0); }
+}
+
+/* 渐变叠加 */
+.cyber-gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, var(--secondary-highlight, rgba(138, 43, 226, 0.1)) 0%, transparent 70%);
+}
+
+/* 发光线条 */
+.cyber-glow-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--highlight-glow, rgba(0, 174, 255, 0.1)), transparent);
+  animation: cyberGlowLinesMove 5s ease-in-out infinite alternate;
+}
+
+@keyframes cyberGlowLinesMove {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
 .admin-container {
   display: flex;
   min-height: 100vh;
-  background-color: white;
+  background: transparent;
+  position: relative;
 }
 
-/* 左侧导航栏样式 */
-.admin-sidebar {
+/* 玄幻科技风格左侧导航栏样式 */
+.cyber-sidebar {
   width: 250px;
-  background-color: white;
-  color: #333;
+  background: var(--admin-sidebar-bg);
+  color: var(--admin-sidebar-text);
   height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
   overflow-y: auto;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-  border-right: 1px solid #e8e8e8;
+  border-right: 1px solid var(--admin-sidebar-border);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--admin-sidebar-shadow);
+  z-index: 10;
+  padding: 20px 0;
 }
 
-/* 统计概览样式 */
+.cyber-sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--highlight), var(--secondary-highlight, #8a2be2), transparent);
+  animation: cyberGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes cyberGlow {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.cyber-sidebar-header {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--admin-sidebar-header-border);
+  margin-bottom: 20px;
+}
+
+.cyber-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cyber-logo h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--admin-sidebar-logo-color);
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--highlight), var(--secondary-highlight, #8a2be2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.logo-accent {
+  font-size: 24px;
+  color: var(--highlight);
+  text-shadow: 0 0 10px var(--highlight-glow, rgba(0, 174, 255, 0.7));
+  animation: logoGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes logoGlow {
+  0% { text-shadow: 0 0 10px var(--highlight-glow, rgba(0, 174, 255, 0.7)); }
+  100% { text-shadow: 0 0 20px var(--highlight-glow, rgba(0, 174, 255, 0.9)), 0 0 30px var(--highlight-glow, rgba(0, 174, 255, 0.6)); }
+}
+
+/* 玄幻科技风格统计概览样式 */
 .statistics-overview .overview-cards {
   margin-bottom: 30px;
 }
@@ -1061,45 +1343,124 @@ export default {
 }
 
 .statistics-overview .group-title {
-  font-size: 18px;
-  color: #2c3e50;
-  margin-bottom: 15px;
-  padding-left: 10px;
-  border-left: 4px solid #3498db;
+  font-size: 20px;
+  color: var(--admin-group-title-color);
+  margin-bottom: 20px;
+  padding-left: 15px;
+  border-left: 4px solid var(--highlight);
+  text-shadow: var(--admin-group-title-text-shadow);
+  position: relative;
+  border-bottom: var(--admin-group-title-border);
+}
+
+.statistics-overview .group-title::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--highlight), var(--secondary-highlight, #8a2be2));
+  border-radius: 2px;
 }
 
 .statistics-overview .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  gap: 25px;
 }
 
 .statistics-overview .stat-card {
   display: flex;
   align-items: center;
-  padding: 20px;
-  border-radius: 12px;
-  color: white;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 25px;
+  border-radius: 15px;
+  color: var(--text-primary);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+.statistics-overview .stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  z-index: -1;
+}
+
+.statistics-overview .stat-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    var(--highlight-glow, rgba(0, 174, 255, 0.1)),
+    var(--secondary-highlight, rgba(138, 43, 226, 0.1)),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: cyberShine 3s infinite linear;
+  z-index: -1;
+}
+
+@keyframes cyberShine {
+  0% { transform: rotate(45deg) translateX(-100%); }
+  100% { transform: rotate(45deg) translateX(100%); }
 }
 
 .statistics-overview .stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 35px var(--highlight-glow, rgba(0, 174, 255, 0.4));
+  border-color: var(--highlight-glow, rgba(0, 174, 255, 0.6));
 }
 
-.statistics-overview .stat-card.primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.statistics-overview .stat-card.secondary { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-.statistics-overview .stat-card.success { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-.statistics-overview .stat-card.warning { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-.statistics-overview .stat-card.info { background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%); }
-.statistics-overview .stat-card.danger { background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); }
+.statistics-overview .stat-card.primary { 
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8)); 
+}
+
+.statistics-overview .stat-card.secondary { 
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.8), rgba(245, 87, 108, 0.8)); 
+}
+
+.statistics-overview .stat-card.success { 
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.8), rgba(0, 242, 254, 0.8)); 
+}
+
+.statistics-overview .stat-card.warning { 
+  background: linear-gradient(135deg, rgba(250, 112, 154, 0.8), rgba(254, 225, 64, 0.8)); 
+}
+
+.statistics-overview .stat-card.info { 
+  background: linear-gradient(135deg, rgba(11, 163, 96, 0.8), rgba(60, 186, 146, 0.8)); 
+}
+
+.statistics-overview .stat-card.danger { 
+  background: linear-gradient(135deg, rgba(255, 154, 158, 0.8), rgba(250, 208, 196, 0.8)); 
+}
 
 .statistics-overview .stat-icon {
-  font-size: 32px;
+  font-size: 36px;
   margin-right: 20px;
   opacity: 0.9;
+  color: var(--highlight);
+  text-shadow: 0 0 10px var(--highlight-glow, rgba(0, 174, 255, 0.7));
+  transition: all 0.3s ease;
+}
+
+.statistics-overview .stat-card:hover .stat-icon {
+  transform: scale(1.2);
+  text-shadow: 0 0 15px var(--highlight-glow, rgba(0, 174, 255, 0.9));
 }
 
 .statistics-overview .stat-content {
@@ -1107,25 +1468,29 @@ export default {
 }
 
 .statistics-overview .stat-card .stat-number {
-  font-size: 36px;
+  font-size: 40px;
   font-weight: bold;
   margin: 0 0 5px 0;
-  color: white;
+  color: var(--text-primary);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .statistics-overview .stat-card .stat-label {
   font-size: 16px;
   opacity: 0.9;
-  color: white;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
 }
 
 .statistics-overview .update-info {
   text-align: center;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  color: #6c757d;
+  padding: 20px;
+  border-radius: 10px;
+  color: var(--text-secondary);
   font-size: 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(5px);
 }
 
 @media (max-width: 768px) {
@@ -1146,16 +1511,22 @@ export default {
 }
 
 .sidebar-header {
-  padding: 20px;
-  border-bottom: 1px solid #e8e8e8;
-  background-color: #fafafa;
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background: transparent;
+  margin-bottom: 20px;
 }
 
 .sidebar-header h2 {
   margin: 0;
   font-size: 22px;
-  color: #333;
-  font-weight: bold;
+  color: var(--text-primary);
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--highlight), var(--secondary-highlight, #8a2be2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
 }
 
 .sidebar-nav ul {
@@ -1164,37 +1535,122 @@ export default {
   margin: 0;
 }
 
-.nav-item {
+/* 玄幻科技风格导航项样式 */
+.cyber-nav-item {
   margin: 0;
+  list-style: none;
+  position: relative;
 }
 
-.nav-item a {
+.cyber-nav-item:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+.cyber-nav-link {
   display: flex;
   align-items: center;
-  padding: 12px 20px;
-  color: #333;
+  padding: 15px 20px;
+  color: var(--admin-sidebar-nav-text);
   text-decoration: none;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  font-size: 18px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 0 15px;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
 
-.nav-item a:hover {
-  background-color: #f5f5f5;
-  color: #1890ff;
+.cyber-nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--highlight-glow, rgba(0, 174, 255, 0.1)), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
 }
 
-.nav-item.active a {
-  background-color: #e6f7ff;
-  color: #1890ff;
-  font-weight: 500;
+.cyber-nav-link:hover {
+  color: var(--highlight);
+  transform: translateX(5px);
+  background: var(--admin-sidebar-nav-hover-bg);
+  box-shadow: 0 5px 15px var(--highlight-glow, rgba(0, 174, 255, 0.2));
 }
 
-.nav-icon {
-  font-size: 20px;
+.cyber-nav-link:hover::before {
+  opacity: 1;
+}
+
+.cyber-nav-link.active {
+  color: var(--text-primary);
+  background: var(--admin-sidebar-nav-active-bg);
+  box-shadow: 0 5px 15px var(--highlight-glow, rgba(0, 174, 255, 0.3));
+  border-left: 3px solid var(--admin-sidebar-nav-active-border);
+}
+
+.cyber-nav-link.active::before {
+  opacity: 1;
+}
+
+/* 发光效果容器 */
+.cyber-glow-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.cyber-nav-link:hover .cyber-glow-effect,
+.cyber-nav-link.active .cyber-glow-effect {
+  opacity: 1;
+}
+
+.cyber-glow-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  box-shadow: 
+    inset 0 0 20px var(--highlight-glow, rgba(0, 174, 255, 0.5)),
+    0 0 20px var(--highlight-glow, rgba(0, 174, 255, 0.3));
+  animation: cyberInnerGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes cyberInnerGlow {
+  0% { box-shadow: inset 0 0 20px var(--highlight-glow, rgba(0, 174, 255, 0.5)), 0 0 20px var(--highlight-glow, rgba(0, 174, 255, 0.3)); }
+  100% { box-shadow: inset 0 0 30px var(--highlight-glow, rgba(0, 174, 255, 0.7)), 0 0 30px var(--highlight-glow, rgba(0, 174, 255, 0.5)); }
+}
+
+/* 玄幻科技风格图标样式 */
+.cyber-nav-icon {
   margin-right: 12px;
-  width: 24px;
+  font-size: 18px;
+  width: 20px;
   text-align: center;
+  color: var(--highlight);
+  text-shadow: 0 0 5px var(--highlight);
+  transition: all 0.3s ease;
+}
+
+.cyber-nav-link:hover .cyber-nav-icon {
+  color: var(--text-primary);
+  text-shadow: 0 0 10px var(--highlight);
+  transform: scale(1.2);
+}
+
+.cyber-nav-link.active .cyber-nav-icon {
+  color: var(--text-primary);
+  text-shadow: 0 0 10px var(--highlight);
 }
 
 .nav-text {
@@ -1206,7 +1662,9 @@ export default {
   flex: 1;
   margin-left: 250px;
   padding: 20px 0;
-  background-color: white;
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .admin-dashboard {
@@ -1227,120 +1685,211 @@ export default {
 .user-table {
   width: 100%;
   border-collapse: collapse;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .user-table th,
 .user-table td {
-  padding: 12px;
+  padding: 15px 12px;
   text-align: left;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .user-table th {
-  background-color: #f5f5f5;
   font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  text-shadow: 0 0 5px var(--highlight);
+  position: relative;
+}
+
+.user-table th::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--highlight), transparent);
+}
+
+.user-table td {
+  color: var(--text-secondary);
 }
 
 .user-table tr:hover {
-  background-color: #f9f9f9;
+  background: var(--bg-hover);
+  transition: all 0.3s ease;
 }
 
 .user-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .status-indicator {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  margin-right: 6px;
+  margin-right: 8px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .status-active {
-  background-color: #52c41a;
+  background: linear-gradient(135deg, #52c41a, #73d13d);
+  box-shadow: 0 0 10px rgba(82, 196, 26, 0.5);
 }
 
 .status-disabled {
-  background-color: #d9d9d9;
+  background: linear-gradient(135deg, #d9d9d9, #bfbfbf);
+  box-shadow: 0 0 10px rgba(217, 217, 217, 0.3);
 }
 
 .enable-btn {
-  background-color: #52c41a;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(82, 196, 26, 0.3), rgba(82, 196, 26, 0.5));
+  color: #73d13d;
+  border: 1px solid rgba(82, 196, 26, 0.6);
+  padding: 8px 15px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+}
+
+.enable-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  z-index: -1;
 }
 
 .enable-btn:hover {
-  background-color: #73d13d;
+  background: linear-gradient(135deg, rgba(82, 196, 26, 0.5), rgba(82, 196, 26, 0.7));
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(82, 196, 26, 0.3);
 }
 
 .enable-btn:disabled {
-  background-color: #b7eb8f;
+  background: var(--bg-secondary);
   cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
 }
 
 .disable-btn {
-  background-color: #faad14;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(250, 173, 20, 0.3), rgba(250, 173, 20, 0.5));
+  color: #ffc53d;
+  border: 1px solid rgba(250, 173, 20, 0.6);
+  padding: 8px 15px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+}
+
+.disable-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  z-index: -1;
 }
 
 .disable-btn:hover {
-  background-color: #ffc53d;
+  background: linear-gradient(135deg, rgba(250, 173, 20, 0.5), rgba(250, 173, 20, 0.7));
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(250, 173, 20, 0.3);
 }
 
 .disable-btn:disabled {
-  background-color: #ffe58f;
+  background: var(--bg-secondary);
   cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
 }
 
-/* 评论管理样式 */
+/* 玄幻科技风格评论管理样式 */
 .comments-container {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 24px;
-  margin-top: 20px;
+  background: var(--bg-secondary);
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+  padding: 30px;
+  margin-top: 25px;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.comments-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  z-index: -1;
 }
 
 .comments-list {
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .comments-list-header {
   display: grid;
   grid-template-columns: 80px 1fr 120px 100px 150px 100px;
-  gap: 10px;
-  padding: 12px 8px;
-  background-color: #fafafa;
-  border-bottom: 1px solid #f0f0f0;
+  gap: 12px;
+  padding: 15px 10px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
   font-weight: 600;
   font-size: 14px;
-  color: #333;
+  color: var(--text-primary);
+  text-shadow: 0 0 5px var(--highlight);
+  position: relative;
+}
+
+.comments-list-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--highlight), transparent);
 }
 
 .comment-item {
   display: grid;
   grid-template-columns: 80px 1fr 120px 100px 150px 100px;
-  gap: 10px;
-  padding: 12px 8px;
-  border-bottom: 1px solid #f0f0f0;
-  transition: background-color 0.2s;
+  gap: 12px;
+  padding: 15px 10px;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.3s ease;
 }
 
 .comment-item:hover {
-  background-color: #fafafa;
+  background: var(--bg-hover);
 }
 
 .comment-item:last-child {
@@ -1353,11 +1902,12 @@ export default {
   white-space: nowrap;
   display: flex;
   align-items: center;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .header-item {
-  color: #333;
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .item.id, .header-item.id {
@@ -1368,44 +1918,63 @@ export default {
 
 .item.content {
   white-space: normal;
-  line-height: 1.4;
+  line-height: 1.5;
   max-height: 80px;
   overflow: auto;
   word-break: break-word;
+  color: var(--text-secondary);
 }
 
 .item.author {
   font-weight: 500;
+  color: var(--highlight);
 }
 
 .item.article .article-link {
-  color: #1890ff;
+  color: var(--highlight);
   cursor: pointer;
   text-decoration: none;
-  transition: color 0.3s;
-  border-bottom: 1px dashed #1890ff;
-  padding-bottom: 1px;
+  transition: all 0.3s ease;
+  border-bottom: 1px dashed var(--highlight);
+  padding-bottom: 2px;
 }
 
 .item.article .article-link:hover {
-  color: #40a9ff;
-  border-bottom-color: #40a9ff;
+  color: var(--secondary-highlight);
+  border-bottom-color: var(--secondary-highlight);
+  text-shadow: 0 0 10px var(--highlight);
 }
 
 .delete-btn {
-  background-color: #ff4d4f;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(255, 77, 79, 0.3), rgba(255, 77, 79, 0.5));
+  color: #ff7875;
+  border: 1px solid rgba(255, 77, 79, 0.6);
+  padding: 8px 16px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 0 10px rgba(255, 77, 79, 0.2);
+}
+
+.delete-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  z-index: -1;
 }
 
 .delete-btn:hover {
-  background-color: #ff7875;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(255, 77, 79, 0.5), rgba(255, 77, 79, 0.7));
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 77, 79, 0.4);
 }
 
 .delete-btn:active {
@@ -1416,118 +1985,204 @@ export default {
 .empty-state {
   padding: 40px 20px;
   text-align: center;
-  color: #6c757d;
+  color: var(--text-secondary);
   font-size: 16px;
-  background-color: #f8f9fa;
+  background-color: var(--bg-tertiary);
   border-radius: 4px;
   margin-top: 20px;
 }
 
-/* 评论分页样式 */
+/* 玄幻科技风格评论分页样式 */
 .comments-container .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 24px;
-  gap: 16px;
-  padding: 15px 0;
-  border-top: 1px solid #f0f0f0;
+  margin-top: 30px;
+  gap: 20px;
+  padding: 20px 0;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
 }
 
 .page-btn {
-  padding: 8px 16px;
-  border: 1px solid #d9d9d9;
-  background-color: white;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
-  color: #666;
-  transition: all 0.3s;
+  color: var(--text-secondary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 0 10px var(--highlight-glow);
+}
+
+.page-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  z-index: -1;
 }
 
 .page-btn:hover:not(:disabled) {
-  border-color: #1890ff;
-  color: #1890ff;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, var(--highlight), var(--secondary-highlight));
+  border-color: var(--highlight);
+  color: var(--highlight);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px var(--highlight-glow);
 }
 
 .page-btn:disabled {
   cursor: not-allowed;
   opacity: 0.5;
-  background-color: #f5f5f5;
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
 }
 
 .page-info {
-  color: #666;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
+  text-shadow: 0 0 5px var(--highlight);
 }
 
 .page-size {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .page-size select {
-  padding: 6px 12px;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  background-color: white;
+  padding: 8px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
   font-size: 14px;
-  color: #666;
-  transition: border-color 0.3s;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 0 10px var(--highlight-glow);
 }
 
 .page-size select:focus {
   outline: none;
-  border-color: #1890ff;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  border-color: var(--highlight);
+  box-shadow: 0 0 15px var(--highlight-glow);
+}
+
+.page-size select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .dashboard-title {
-  font-size: 28px;
-  color: #333;
-  margin-bottom: 30px;
+  font-size: 32px;
+  color: var(--admin-title-color);
+  margin-bottom: 35px;
   text-align: center;
+  text-shadow: var(--admin-title-text-shadow);
+  background: var(--admin-title-bg-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+}
+
+.dashboard-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--highlight), transparent);
+  border-radius: 50%;
 }
 
 .stats-cards {
   display: flex;
-  gap: 20px;
-  margin-bottom: 40px;
+  gap: 25px;
+  margin-bottom: 45px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .stat-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--bg-secondary);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: var(--shadow);
   flex: 1;
-  min-width: 200px;
+  min-width: 220px;
   text-align: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  z-index: -1;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px var(--shadow);
 }
 
 .stat-number {
-  font-size: 36px;
+  font-size: 40px;
   font-weight: bold;
-  color: #1890ff;
-  margin-bottom: 8px;
+  color: var(--highlight);
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px var(--highlight);
 }
 
 .stat-label {
   font-size: 16px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .article-management {
-  background: #fff;
-  border-radius: 8px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--bg-secondary);
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.article-management::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  z-index: -1;
 }
 
 .management-header {
@@ -1538,9 +2193,15 @@ export default {
 }
 
 .management-header h2 {
-  font-size: 20px;
-  color: #333;
+  font-size: 24px;
+  color: var(--admin-management-title-color);
   margin: 0;
+  text-shadow: var(--admin-management-title-text-shadow);
+  background: linear-gradient(135deg, var(--highlight), var(--secondary-highlight));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
 }
 
 .search-bar {
@@ -1549,29 +2210,37 @@ export default {
 }
 
 .search-input {
-  padding: 8px 12px;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
+  padding: 10px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
   font-size: 14px;
   width: 300px;
   outline: none;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow);
 }
 
 .search-input:focus {
-  border-color: #1890ff;
+  border-color: var(--highlight);
+  box-shadow: var(--highlight-glow);
+}
+
+.search-input::placeholder {
+  color: var(--text-secondary);
 }
 
 .loading {
   text-align: center;
   padding: 40px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .empty-state {
   text-align: center;
   padding: 60px;
-  color: #999;
+  color: var(--text-secondary);
 }
 
 .article-table {
@@ -1581,22 +2250,42 @@ export default {
 table {
   width: 100%;
   border-collapse: collapse;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 th, td {
-  padding: 12px 8px;
+  padding: 15px 12px;
   text-align: left;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 th {
   font-weight: 600;
-  color: #333;
-  background-color: #fafafa;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  text-shadow: 0 0 5px var(--highlight);
+  position: relative;
+}
+
+th::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--highlight), transparent);
 }
 
 td {
-  color: #666;
+  color: var(--text-secondary);
+}
+
+tr:hover {
+  background: var(--bg-hover);
+  transition: all 0.3s ease;
 }
 
 .article-title {
@@ -1607,119 +2296,310 @@ td {
 }
 
 .status-badge {
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
   font-size: 12px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  text-align: center;
+  min-width: 70px;
+}
+
+.status-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  z-index: -1;
 }
 
 .status-badge.published {
-  background-color: #f6ffed;
-  color: #52c41a;
-  border: 1px solid #b7eb8f;
+  background: linear-gradient(135deg, rgba(82, 196, 26, 0.2), rgba(82, 196, 26, 0.4));
+  color: #73d13d;
+  border: 1px solid rgba(82, 196, 26, 0.5);
+  box-shadow: 0 0 10px rgba(82, 196, 26, 0.3);
 }
 
 .status-badge.draft {
-  background-color: #fff7e6;
-  color: #fa8c16;
-  border: 1px solid #ffd591;
+  background: linear-gradient(135deg, rgba(250, 140, 22, 0.2), rgba(250, 140, 22, 0.4));
+  color: #ffc53d;
+  border: 1px solid rgba(250, 140, 22, 0.5);
+  box-shadow: 0 0 10px rgba(250, 140, 22, 0.3);
 }
 
 /* 用户状态样式 */
 .status-badge.enabled {
-  background-color: #f6ffed;
-  color: #52c41a;
-  border: 1px solid #b7eb8f;
+  background: linear-gradient(135deg, rgba(82, 196, 26, 0.2), rgba(82, 196, 26, 0.4));
+  color: #73d13d;
+  border: 1px solid rgba(82, 196, 26, 0.5);
+  box-shadow: 0 0 10px rgba(82, 196, 26, 0.3);
 }
 
 .status-badge.disabled {
-  background-color: #fff1f0;
-  color: #ff4d4f;
-  border: 1px solid #ffccc7;
+  background: linear-gradient(135deg, rgba(255, 77, 79, 0.2), rgba(255, 77, 79, 0.4));
+  color: #ff7875;
+  border: 1px solid rgba(255, 77, 79, 0.5);
+  box-shadow: 0 0 10px rgba(255, 77, 79, 0.3);
 }
 
 /* 用户角色样式 */
 .role-badge {
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 6px 10px;
+  border-radius: 20px;
   font-size: 12px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  text-align: center;
+  min-width: 70px;
+}
+
+.role-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  z-index: -1;
 }
 
 .role-badge.ADMIN {
-  background-color: #e6f7ff;
-  color: #1890ff;
-  border: 1px solid #91d5ff;
+  background: linear-gradient(135deg, rgba(24, 144, 255, 0.2), rgba(24, 144, 255, 0.4));
+  color: #40a9ff;
+  border: 1px solid rgba(24, 144, 255, 0.5);
+  box-shadow: 0 0 10px rgba(24, 144, 255, 0.3);
 }
 
 .role-badge.USER {
-  background-color: #f0f5ff;
-  color: #597ef7;
-  border: 1px solid #adc6ff;
+  background: linear-gradient(135deg, rgba(89, 126, 247, 0.2), rgba(89, 126, 247, 0.4));
+  color: #7a9fff;
+  border: 1px solid rgba(89, 126, 247, 0.5);
+  box-shadow: 0 0 10px rgba(89, 126, 247, 0.3);
+}
+
+/* 自定义下拉菜单样式 */
+.cyber-dropdown-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+.cyber-dropdown-container label {
+  font-size: 16px;
+  color: var(--text-secondary);
+  text-shadow: 0 0 5px var(--highlight);
+}
+
+.cyber-dropdown {
+  position: relative;
+  min-width: 150px;
+  z-index: 11; /* 比下拉菜单更高，确保定位上下文 */
+}
+
+.cyber-dropdown-select {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s;
+  backdrop-filter: blur(5px);
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  min-width: 120px;
+  height: 42px; /* 与搜索输入框高度保持一致 (padding 10px + border 1px * 2 = 22px, font-size 14px + line-height) */
+  box-sizing: border-box; /* 确保padding不会增加元素总高度 */
+  line-height: 1; /* 确保文字垂直居中 */
+}
+
+.cyber-dropdown-select:hover {
+  border-color: var(--highlight);
+  box-shadow: var(--highlight-glow);
+}
+
+.cyber-dropdown-arrow {
+  font-size: 12px;
+  transition: transform 0.3s;
+  color: var(--highlight);
+}
+
+.cyber-dropdown-arrow.rotate {
+  transform: rotate(180deg);
+  color: var(--highlight);
+}
+
+.cyber-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 5px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  animation: dropdownSlide 0.3s ease-out;
+  z-index: 10;
+  /* 确保下拉菜单不会被任何容器裁剪 */
+  transform: translateY(0);
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cyber-dropdown-item {
+  padding: 10px 15px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  min-height: 42px; /* 与下拉菜单选择器高度保持一致 */
+}
+
+.cyber-dropdown-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  text-shadow: 0 0 5px var(--highlight);
+}
+
+.cyber-dropdown-item:first-child {
+  border-bottom: 1px solid var(--border-color);
 }
 
 .action-buttons {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .btn {
-  padding: 6px 12px;
+  padding: 8px 15px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  transition: opacity 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   display: inline-block;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  z-index: -1;
 }
 
 .btn:hover {
-  opacity: 0.8;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
 }
 
 .btn-edit {
-  background-color: #1890ff;
-  color: white;
+  background: linear-gradient(135deg, rgba(24, 144, 255, 0.3), rgba(24, 144, 255, 0.5));
+  color: #40a9ff;
+  border: 1px solid rgba(24, 144, 255, 0.6);
+  box-shadow: 0 0 10px rgba(24, 144, 255, 0.2);
 }
 
 .btn-delete {
-  background-color: #ff4d4f;
-  color: white;
+  background: linear-gradient(135deg, rgba(255, 77, 79, 0.3), rgba(255, 77, 79, 0.5));
+  color: #ff7875;
+  border: 1px solid rgba(255, 77, 79, 0.6);
+  box-shadow: 0 0 10px rgba(255, 77, 79, 0.2);
 }
 
 .btn-view {
-  background-color: #52c41a;
-  color: white;
+  background: linear-gradient(135deg, rgba(82, 196, 26, 0.3), rgba(82, 196, 26, 0.5));
+  color: #73d13d;
+  border: 1px solid rgba(82, 196, 26, 0.6);
+  box-shadow: 0 0 10px rgba(82, 196, 26, 0.2);
 }
 
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 24px;
-  gap: 16px;
+  margin-top: 30px;
+  gap: 20px;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+  border: 1px solid var(--border-color);
 }
 
 .pagination-btn {
-  padding: 8px 16px;
-  border: 1px solid #d9d9d9;
-  background-color: white;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-secondary);
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.pagination-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  z-index: -1;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  border-color: #1890ff;
-  color: #1890ff;
+  border-color: var(--highlight);
+  color: var(--highlight);
+  transform: translateY(-2px);
+  box-shadow: var(--highlight-glow);
 }
 
 .pagination-btn:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+  background: var(--bg-secondary);
 }
 
 .pagination-info {
-  color: #666;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 /* 响应式设计 */

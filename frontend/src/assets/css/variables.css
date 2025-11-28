@@ -1,0 +1,236 @@
+/* CSS变量定义 - 全局颜色系统和变量体系 */
+
+:root {
+  /* ========== 主色系统 ========== */
+  --primary: #165DFF;
+  --primary-light: #4080FF;
+  --primary-lighter: #69B1FF;
+  --primary-lightest: #BAE0FF;
+  --primary-dark: #0E42D2;
+  --primary-darker: #0A2D9A;
+  --primary-darkest: #081D66;
+  --primary-hover: #367CFF;
+  --primary-active: #0D47A1;
+  
+  /* ========== 辅助色系统 ========== */
+  --secondary: #722ED1;
+  --secondary-light: #9254DE;
+  --secondary-lighter: #B37FEB;
+  --secondary-lightest: #D6BBFB;
+  --secondary-dark: #531DAB;
+  --secondary-darker: #38127A;
+  --secondary-darkest: #250C52;
+  --secondary-hover: #8E44AD;
+  --secondary-active: #6C3483;
+  
+  /* 第三辅助色 */
+  --tertiary: #13C2C2;
+  --tertiary-light: #36CFBD;
+  --tertiary-lighter: #5CDBD3;
+  --tertiary-lightest: #87E8DE;
+  --tertiary-dark: #0A8F8F;
+  --tertiary-darker: #075E5E;
+  --tertiary-darkest: #042F2F;
+  --tertiary-hover: #117A7A;
+  --tertiary-active: #0C5E5E;
+  
+  /* ========== 功能色系统 ========== */
+  /* 成功色 */
+  --success: #00B42A;
+  --success-light: #36D399;
+  --success-lighter: #5CDBD3;
+  --success-lightest: #87E8DE;
+  --success-dark: #008722;
+  --success-darker: #006E1A;
+  --success-darkest: #004712;
+  --success-hover: #2ECC71;
+  --success-active: #27AE60;
+  
+  /* 警告色 */
+  --warning: #FF7D00;
+  --warning-light: #FFAB40;
+  --warning-lighter: #FFC269;
+  --warning-lightest: #FFD89F;
+  --warning-dark: #D86200;
+  --warning-darker: #B34D00;
+  --warning-darkest: #873A00;
+  --warning-hover: #F39C12;
+  --warning-active: #E67E22;
+  
+  /* 错误色 */
+  --error: #F53F3F;
+  --error-light: #FF7875;
+  --error-lighter: #FF9E9E;
+  --error-lightest: #FFCDD2;
+  --error-dark: #D93030;
+  --error-darker: #B31C1C;
+  --error-darkest: #871818;
+  --error-hover: #E74C3C;
+  --error-active: #C0392B;
+  
+  /* 信息色 */
+  --info: #86909C;
+  --info-light: #A0A9B4;
+  --info-lighter: #B8C2CC;
+  --info-lightest: #DDE2E8;
+  --info-dark: #6E7882;
+  --info-darker: #57606A;
+  --info-darkest: #3D444C;
+  --info-hover: #95A5A6;
+  --info-active: #7F8C8D;
+  
+  /* ========== 中性色系统 ========== */
+  /* 背景色 */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F2F3F5;
+  --bg-tertiary: #E5E6EB;
+  --bg-quaternary: #C9CDD4;
+  --bg-disabled: #F5F6F7;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FAFAFA;
+  --bg-card-active: #F0F0F0;
+  
+  /* 文本色 */
+  --text-primary: #1D2129;
+  --text-secondary: #4E5969;
+  --text-tertiary: #86909C;
+  --text-disabled: #C9CDD4;
+  --text-on-primary: #FFFFFF;
+  --text-on-secondary: #FFFFFF;
+  --text-on-dark: #FFFFFF;
+  --text-error: #F53F3F;
+  --text-success: #00B42A;
+  --text-warning: #FF7D00;
+  --text-info: #86909C;
+  
+  /* 边框色 */
+  --border-primary: #D9D9D9;
+  --border-secondary: #EAECEF;
+  --border-tertiary: #F0F2F5;
+  --border-disabled: #F5F6F7;
+  --border-error: #FFCCC7;
+  --border-success: #B7EB8F;
+  --border-warning: #FFE58F;
+  --border-info: #91D5FF;
+  
+  /* ========== 字体系统 ========== */
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-family-mono: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  
+  /* ========== 尺寸变量 ========== */
+  /* 边框圆角 */
+  --border-radius-sm: 2px;
+  --border-radius-md: 4px;
+  --border-radius-lg: 8px;
+  --border-radius-xl: 12px;
+  --border-radius-full: 9999px;
+  
+  /* 边框宽度 */
+  --border-width-thin: 1px;
+  --border-width-normal: 2px;
+  --border-width-thick: 3px;
+  
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  
+  /* 间距 */
+  --space-xs: 0.25rem;  /* 4px */
+  --space-sm: 0.5rem;   /* 8px */
+  --space-md: 1rem;     /* 16px */
+  --space-lg: 1.5rem;   /* 24px */
+  --space-xl: 2rem;     /* 32px */
+  --space-2xl: 3rem;    /* 48px */
+  --space-3xl: 4rem;    /* 64px */
+  
+  /* 间距单位 */
+  --spacing-1: var(--space-xs);
+  --spacing-2: var(--space-sm);
+  --spacing-3: var(--space-md);
+  --spacing-4: var(--space-lg);
+  --spacing-5: var(--space-xl);
+  --spacing-6: var(--space-2xl);
+  --spacing-7: var(--space-3xl);
+  
+  /* ========== 动画变量 ========== */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  --transition-colors: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+  --transition-transform: transform 0.3s ease;
+  --transition-shadow: box-shadow 0.3s ease;
+  --transition-all: all 0.3s ease;
+  
+  /* ========== Z-index 层级 ========== */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+  --z-index-toast: 1080;
+  
+  /* ========== 其他变量 ========== */
+  --line-height-base: 1.6;
+  --line-height-heading: 1.2;
+  --max-content-width: 1200px;
+  --header-height: 60px;
+  --footer-height: 80px;
+  --main-bg-pattern: radial-gradient(circle at 20% 80%, rgba(0, 174, 255, 0.05) 0%, transparent 50%), 
+                     radial-gradient(circle at 80% 20%, rgba(138, 43, 226, 0.05) 0%, transparent 50%), 
+                     radial-gradient(circle at 40% 40%, rgba(0, 174, 255, 0.03) 0%, transparent 50%);
+  --border-color: var(--border-secondary);
+  --shadow: var(--shadow-md);
+  --error-rgb: 245, 63, 63;
+  
+  /* ========== 模态框变量 ========== */
+  --modal-overlay-bg: radial-gradient(circle, rgba(10, 10, 26, 0.95) 0%, rgba(18, 18, 46, 0.98) 100%);
+  --modal-bg: linear-gradient(135deg, rgba(16, 16, 36, 0.95) 0%, rgba(22, 22, 50, 0.95) 100%);
+  --modal-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 30px rgba(138, 43, 226, 0.4);
+  --modal-border: 1px solid rgba(138, 43, 226, 0.5);
+  --modal-title-underline: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.8), transparent);
+  
+  /* ========== 输入框变量 ========== */
+  --input-border: 1px solid rgba(138, 43, 226, 0.5);
+  --input-bg: rgba(10, 10, 26, 0.7);
+  --input-shadow: 0 0 10px rgba(138, 43, 226, 0.1);
+  --input-focus-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+  --input-focus-bg: rgba(16, 16, 36, 0.9);
+  
+  /* ========== 按钮变量 ========== */
+  --edit-btn-border-gradient: linear-gradient(45deg, #8a2be2, #4169e1, #8a2be2, #4169e1);
+  --edit-btn-hover-shadow: 0 0 25px rgba(138, 43, 226, 0.7);
+  --disabled-btn-bg: #4a5568;
+  
+  /* ========== 分页控件变量 ========== */
+  --pagination-bg: rgba(16, 16, 36, 0.7);
+  --pagination-border: 1px solid rgba(138, 43, 226, 0.3);
+  
+  /* ========== 其他UI变量 ========== */
+  --no-articles-text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  
+  /* ========== 玄幻科技风格变量 ========== */
+  --grid-color: rgba(0, 174, 255, 0.1);
+  --secondary-highlight: #8a2be2;
+  --highlight-glow: rgba(0, 174, 255, 0.7);
+  --success-color-light: rgba(0, 180, 42, 0.2);
+  --danger-bg: rgba(245, 63, 63, 0.1);
+  --danger-border: rgba(245, 63, 63, 0.3);
+  --danger-color: #F53F3F;
+  --success-color: #00B42A;
+  --success-glow: rgba(0, 180, 42, 0.5);
+  --warning-color: #FF7D00;
+  --disabled-color: #C9CDD4;
+  --text-accent-light: #40A9FF;
+  
+  /* ========== RGB颜色值（用于rgba函数） ========== */
+  --bg-secondary-rgb: 255, 255, 255;
+  --bg-tertiary-rgb: 233, 236, 239;
+  --highlight-rgb: 0, 174, 255;
+}
