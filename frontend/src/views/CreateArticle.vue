@@ -454,41 +454,118 @@ export default {
 </script>
 
 <style scoped>
+/* 全局容器样式 */
 .create-article {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
+  padding: 30px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  margin-top: 30px;
+  margin-bottom: 50px;
+  animation: fadeInScale 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  animation-fill-mode: forwards;
 }
 
+/* 页面标题样式 */
+.create-article h1 {
+  margin-bottom: 40px;
+  font-size: 36px;
+  color: #1a1a1a;
+  text-align: center;
+  font-weight: 600;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+  animation: fadeInUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* 表单组样式 */
+.form-group {
+  margin-bottom: 32px;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.form-group:hover label {
+  color: #1890ff;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 12px;
+  color: #333;
+  font-weight: 600;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+/* 移除所有表单组的动画延迟 */
+.form-group:nth-child(1),
+.form-group:nth-child(2),
+.form-group:nth-child(3) { animation-delay: 0s; }
+
+/* 输入框样式 */
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  background-color: #ffffff;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #1890ff;
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+/* 封面图上传区域样式 */
 .cover-image-upload {
   position: relative;
 }
 
 .upload-placeholder {
   border: 2px dashed #d9d9d9;
-  border-radius: 4px;
-  padding: 30px;
+  border-radius: 8px;
+  padding: 40px 20px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #fafafa;
 }
 
 .upload-placeholder:hover {
   border-color: #1890ff;
   background-color: #f0f8ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
 }
 
 .upload-btn {
-  padding: 8px 20px;
+  padding: 10px 24px;
   background-color: #1890ff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
 }
 
 .upload-btn:hover {
   background-color: #40a9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
 }
 
 .upload-hint {
@@ -497,36 +574,52 @@ export default {
   font-size: 14px;
 }
 
+/* 预览容器样式 */
 .preview-container {
   position: relative;
   max-width: 100%;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
   overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.preview-container:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .cover-preview {
   width: 100%;
   height: auto;
-  max-height: 300px;
+  max-height: 350px;
   object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.preview-container:hover .cover-preview {
+  transform: scale(1.02);
 }
 
 .remove-cover-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 5px 12px;
+  top: 15px;
+  right: 15px;
+  padding: 8px 16px;
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  opacity: 0.9;
 }
 
 .remove-cover-btn:hover {
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: #ff4d4f;
+  opacity: 1;
+  transform: scale(1.05);
 }
 
 .uploading-indicator {
@@ -534,130 +627,265 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
   z-index: 10;
+  backdrop-filter: blur(4px);
 }
 
-.create-article h1 {
-  margin-bottom: 30px;
-  font-size: 32px;
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 24px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  color: #333;
-  font-weight: 500;
-  font-size: 16px;
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  font-size: 16px;
-  transition: border-color 0.3s;
-  font-family: inherit;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #1890ff;
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 300px;
-  line-height: 1.6;
-}
-
+/* 编辑器容器样式 */
 .editor-container {
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  transition: border-color 0.3s;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  animation: fadeInScale 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 .editor-container:focus-within {
   border-color: #1890ff;
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
 }
 
 :deep(.ql-container) {
-  min-height: 400px;
+  min-height: 450px;
   font-size: 16px;
   font-family: inherit;
+  border: none;
 }
 
 :deep(.ql-toolbar) {
-  border-bottom: 1px solid #f0f0f0;
+  border: none;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 12px;
 }
 
 :deep(.ql-editor) {
-  line-height: 1.6;
-  min-height: 400px;
+  line-height: 1.7;
+  min-height: 450px;
+  padding: 20px;
+  color: #333;
 }
 
+/* 自定义Quill工具栏按钮样式 */
+:deep(.ql-stroke) {
+  fill: none;
+  stroke: #666;
+}
+
+:deep(.ql-fill) {
+  fill: #666;
+}
+
+:deep(.ql-picker) {
+  color: #666;
+}
+
+:deep(.ql-toolbar button:hover .ql-stroke) {
+  stroke: #1890ff;
+}
+
+:deep(.ql-toolbar button:hover .ql-fill) {
+  fill: #1890ff;
+}
+
+:deep(.ql-toolbar button.ql-active .ql-stroke) {
+  stroke: #1890ff;
+}
+
+:deep(.ql-toolbar button.ql-active .ql-fill) {
+  fill: #1890ff;
+}
+
+/* 错误信息样式 */
 .error-message {
   color: #ff4d4f;
-  margin-bottom: 16px;
-  padding: 8px 12px;
+  margin-bottom: 24px;
+  padding: 12px 16px;
   background-color: #fff2f0;
   border: 1px solid #ffccc7;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: shake 0.5s ease-in-out;
+  animation-fill-mode: both;
 }
 
+/* 入场动画定义 */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* 表单操作按钮样式 */
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 16px;
-  margin-top: 32px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  animation: fadeInUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 .cancel-btn {
-  padding: 10px 20px;
+  padding: 12px 28px;
   background-color: #fff;
-  color: #333;
+  color: #666;
   border: 1px solid #d9d9d9;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: fadeInUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 .cancel-btn:hover {
-  border-color: #40a9ff;
-  color: #40a9ff;
+  border-color: #1890ff;
+  color: #1890ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.15);
 }
 
 .submit-btn {
-  padding: 10px 20px;
+  padding: 12px 28px;
   background-color: #1890ff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 .submit-btn:hover:not(:disabled) {
   background-color: #40a9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(24, 144, 255, 0.3);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .submit-btn:disabled {
   background-color: #f5f5f5;
   color: #ccc;
   cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 添加提交按钮的加载效果 */
+.submit-btn:disabled::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid #ccc;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .create-article {
+    margin-top: 20px;
+    margin-bottom: 30px;
+    padding: 20px 16px;
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .create-article h1 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .upload-placeholder {
+    padding: 30px 15px;
+  }
+
+  .cover-preview {
+    max-height: 250px;
+  }
+
+  :deep(.ql-container) {
+    min-height: 350px;
+  }
+
+  :deep(.ql-editor) {
+    min-height: 350px;
+    padding: 15px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .cancel-btn,
+  .submit-btn {
+    width: 100%;
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-article {
+    padding: 15px 12px;
+  }
+
+  .create-article h1 {
+    font-size: 24px;
+  }
+
+  .form-group input {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+
+  :deep(.ql-container) {
+    min-height: 300px;
+  }
+
+  :deep(.ql-editor) {
+    min-height: 300px;
+    font-size: 15px;
+  }
 }
 </style>

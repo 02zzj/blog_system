@@ -5,6 +5,13 @@
         <div class="container">
           <router-link to="/" class="logo">博客系统</router-link>
           
+          <!-- 移动端菜单按钮 -->
+          <button class="mobile-menu-btn" :class="{ 'active': showMobileMenu }" @click="toggleMobileMenu" aria-label="菜单">
+            <span class="menu-icon"></span>
+            <span class="menu-icon"></span>
+            <span class="menu-icon"></span>
+          </button>
+          
           <!-- 搜索功能组件 -->
           <div class="search-container">
             <select v-model="searchType" class="search-type-select">
@@ -22,13 +29,13 @@
             <button @click="handleSearch" class="search-button">搜索</button>
           </div>
           
-          <div class="nav-links">
-            <router-link to="/" class="nav-link" @click.native="handleHomeClick">首页</router-link>
-            <router-link v-if="isLoggedIn" to="/create" class="nav-link">写文章</router-link>
-            <router-link v-if="isLoggedIn" to="/profile" class="nav-link">个人中心</router-link>
+          <div class="nav-links" :class="{ 'mobile-menu-open': showMobileMenu }">
+            <router-link to="/" class="nav-link" @click.native="handleHomeClick; showMobileMenu = false">首页</router-link>
+            <router-link v-if="isLoggedIn" to="/create" class="nav-link" @click.native="showMobileMenu = false">写文章</router-link>
+            <router-link v-if="isLoggedIn" to="/profile" class="nav-link" @click.native="showMobileMenu = false">个人中心</router-link>
             <div v-else>
-              <router-link to="/login" class="nav-link">登录</router-link>
-              <router-link to="/register" class="nav-link">注册</router-link>
+              <router-link to="/login" class="nav-link" @click.native="showMobileMenu = false">登录</router-link>
+              <router-link to="/register" class="nav-link" @click.native="showMobileMenu = false">注册</router-link>
             </div>
             
             <!-- 用户头像和昵称，点击显示下拉菜单 -->
@@ -46,12 +53,12 @@
               
               <!-- 下拉菜单 -->
               <div v-if="showUserMenu" class="user-dropdown-menu">
-                <router-link to="/profile" class="dropdown-item" @click="showUserMenu = false">个人中心</router-link>
-                <router-link to="/create" class="dropdown-item" @click="showUserMenu = false">写文章</router-link>
+                <router-link to="/profile" class="dropdown-item" @click="handleMenuItemClick">个人中心</router-link>
+                <router-link to="/create" class="dropdown-item" @click="handleMenuItemClick">写文章</router-link>
                 <!-- 管理员中心选项，仅对管理员显示 -->
-                <router-link v-if="user?.role === 'ADMIN'" to="/admin/dashboard" class="dropdown-item" @click="showUserMenu = false">管理员中心</router-link>
+                <router-link v-if="user?.role === 'ADMIN'" to="/admin/dashboard" class="dropdown-item" @click="handleMenuItemClick">管理员中心</router-link>
                 <div class="dropdown-divider"></div>
-                <button class="dropdown-item logout-item" @click="logout">退出登录</button>
+                <button class="dropdown-item logout-item" @click="handleLogout">退出登录</button>
               </div>
             </div>
           </div>
@@ -88,6 +95,7 @@ export default {
     const isLoggedIn = ref(false)
     const user = ref(null)
     const showUserMenu = ref(false)
+    const showMobileMenu = ref(false)
     const router = useRouter()
     const homeResetEvent = ref(false)
     
@@ -121,7 +129,18 @@ export default {
       isLoggedIn.value = false
       user.value = null
       showUserMenu.value = false
+      showMobileMenu.value = false
       router.push('/')
+    }
+    
+    const handleLogout = () => {
+      logout()
+      showMobileMenu.value = false
+    }
+    
+    const handleMenuItemClick = () => {
+      showUserMenu.value = false
+      showMobileMenu.value = false
     }
     
     // 切换用户菜单显示状态
@@ -129,10 +148,18 @@ export default {
       showUserMenu.value = !showUserMenu.value
     }
     
-    // 点击其他地方关闭用户菜单
+    // 切换移动端菜单显示状态
+    const toggleMobileMenu = () => {
+      showMobileMenu.value = !showMobileMenu.value
+    }
+    
+    // 点击其他地方关闭用户菜单和移动端菜单
     const handleClickOutside = (event) => {
-      if (!event.target.closest('.user-menu-container')) {
+      if (!event.target.closest('.user-menu-container') && !event.target.closest('.mobile-menu-btn')) {
         showUserMenu.value = false
+      }
+      if (!event.target.closest('.nav-links') && !event.target.closest('.mobile-menu-btn')) {
+        showMobileMenu.value = false
       }
     }
 
@@ -148,9 +175,10 @@ export default {
       // 监听路由变化，在每次路由切换后检查登录状态
       router.afterEach(() => {
         checkLoginStatus()
+        showMobileMenu.value = false
       })
       
-      // 监听点击事件，点击其他地方关闭用户菜单
+      // 监听点击事件，点击其他地方关闭用户菜单和移动端菜单
       document.addEventListener('click', handleClickOutside)
     })
 
@@ -167,8 +195,7 @@ export default {
         timestamp: Date.now()
       }
       
-      // 通过设置一个全局状态来通知Home组件重置搜索状态
-      window.homeResetFlag = Date.now() // 使用时间戳确保每次都触发变化
+      // 不再设置homeResetFlag，避免与路由变化监听器造成重复加载
     }
     
     // 获取搜索框占位符文本
@@ -188,8 +215,8 @@ export default {
       // 更新全局搜索状态
       window.globalSearchState = {
         keyword: searchKeyword.value,
-        type: searchType.value,
-        timestamp: Date.now()
+      type: searchType.value,
+      timestamp: Date.now()
       }
       
       // 如果不在首页，则跳转到首页
@@ -205,8 +232,12 @@ export default {
       isLoggedIn,
       user,
       showUserMenu,
+      showMobileMenu,
       logout,
+      handleLogout,
+      handleMenuItemClick,
       toggleUserMenu,
+      toggleMobileMenu,
       handleHomeClick,
       searchKeyword,
       searchType,
@@ -218,6 +249,24 @@ export default {
 </script>
 
 <style>
+/* 重置默认样式并设置基础布局 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+/* App容器使用flex布局确保页脚固定在底部 */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -286,17 +335,18 @@ export default {
 
 .search-button {
   padding: 10px 20px; /* 进一步增大内边距 */
-  background-color: #1890ff;
-  color: white;
-  border: none;
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #d9d9d9;
   border-radius: 4px;
   font-size: 18px; /* 进一步增大字体 */
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s;
 }
 
 .search-button:hover {
-  background-color: #40a9ff;
+  background-color: #f5f5f5;
+  border-color: #40a9ff;
 }
 
 .logo {
@@ -318,11 +368,59 @@ export default {
   padding: 8px 14px; /* 增大内边距 */
   font-size: 18px; /* 进一步增大字体 */
   border-radius: 4px;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
 }
 
 .nav-link:hover {
   background-color: #f5f5f5;
+}
+
+/* 导航链接选中状态样式 */
+.nav-link.router-link-active {
+  color: #1890ff;
+  font-weight: 500;
+  background-color: #f0f9ff;
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.1);
+}
+
+/* 精确匹配当前路径的样式 */
+.nav-link.router-link-exact-active {
+  color: white;
+  background-color: #1890ff;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+}
+
+/* 移动端菜单按钮样式 */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.menu-icon {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: #333;
+  margin: 5px 0;
+  transition: all 0.3s ease;
+}
+
+/* 移动端菜单按钮激活状态 */
+.mobile-menu-btn.active .menu-icon:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.mobile-menu-btn.active .menu-icon:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-btn.active .menu-icon:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
 }
 
 .logout-btn {
@@ -400,9 +498,11 @@ export default {
   background-color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   border-radius: 4px;
-  z-index: 1000;
+  z-index: 1001; /* 提高z-index，确保显示在移动端菜单上方 */
   margin-top: 4px;
   padding: 6px 0;
+  /* 确保下拉菜单不会被父容器裁剪 */
+  overflow: visible;
 }
 
 .dropdown-item {
@@ -438,16 +538,19 @@ export default {
   background-color: #fff2f0;
 }
 
+/* 主内容区域使用flex-grow占据剩余空间，确保页脚被推到底部 */
 .main {
+  flex: 1;
   padding: 40px 0;
-  min-height: calc(100vh - 200px);
 }
 
+/* 页脚样式 */
 .footer {
   background-color: #f5f5f5;
   padding: 20px 0;
   text-align: center;
   color: #666;
+  margin-top: auto;
 }
 
 /* 页面切换动画 */
@@ -459,5 +562,138 @@ export default {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .nav .container {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+  }
+  
+  /* 显示移动端菜单按钮 */
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  .logo {
+    margin-right: auto;
+    text-align: left;
+    font-size: 24px;
+  }
+  
+  /* 搜索容器样式调整 */
+  .search-container {
+    max-width: 300px;
+    flex: 1;
+  }
+  
+  .search-type-select,
+  .search-input,
+  .search-button {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+  
+  /* 移动端导航链接样式 */
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+  
+  /* 移动端菜单展开样式 */
+  .nav-links.mobile-menu-open {
+    max-height: 500px;
+    overflow: visible; /* 确保下拉菜单不会被裁剪 */
+  }
+  
+  /* 移动端导航链接样式 */
+  .nav-links .nav-link {
+    padding: 12px 20px;
+    font-size: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    display: block;
+  }
+  
+  .nav-links .nav-link:last-child {
+    border-bottom: none;
+  }
+  
+  /* 用户菜单容器在移动端的样式 */
+  .nav-links .user-menu-container {
+    padding: 12px 20px;
+    border-top: 1px solid #f0f0f0;
+    position: relative; /* 确保下拉菜单相对于此容器定位 */
+    overflow: visible; /* 确保下拉菜单不会被裁剪 */
+  }
+  
+  .user-nickname {
+    font-size: 16px;
+  }
+  
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .main {
+    padding: 20px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  /* 隐藏搜索容器，在移动端菜单中显示 */
+  .search-container {
+    display: none;
+  }
+  
+  /* 移动端菜单中的搜索容器 */
+  .nav-links.mobile-menu-open .search-container {
+    display: flex;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    max-width: 100%;
+  }
+  
+  .nav-links.mobile-menu-open .search-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .nav-links.mobile-menu-open .search-type-select,
+  .nav-links.mobile-menu-open .search-input,
+  .nav-links.mobile-menu-open .search-button {
+    width: 100%;
+  }
+  
+  .nav-link {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  .user-dropdown-menu {
+    left: 0;
+    transform: none;
+    min-width: 150px;
+  }
+  
+  .dropdown-item {
+    padding: 10px 16px;
+    font-size: 16px;
+  }
 }
 </style>

@@ -2,6 +2,15 @@
   <div class="forgot-password-container">
     <h2 class="title">忘记密码</h2>
     
+    <!-- 步骤指示器 -->
+    <div class="step-indicator" v-if="!isSuccess">
+      <div class="step" :class="{ 'active': currentStep === 1, 'completed': currentStep > 1 }">1</div>
+      <div class="step-line" :class="{ 'completed': currentStep > 1 }"></div>
+      <div class="step" :class="{ 'active': currentStep === 2, 'completed': currentStep > 2 }">2</div>
+      <div class="step-line" :class="{ 'completed': currentStep > 2 }"></div>
+      <div class="step" :class="{ 'active': currentStep === 3, 'completed': currentStep > 3 }">3</div>
+    </div>
+    
     <!-- 步骤1：输入邮箱 -->
     <div v-if="currentStep === 1" class="step-content">
       <div class="form-group">
@@ -299,6 +308,61 @@ export default {
 </script>
 
 <style scoped>
+/* 动画关键帧定义 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* 容器样式 */
 .forgot-password-container {
   max-width: 400px;
   margin: 0 auto;
@@ -306,102 +370,198 @@ export default {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.6s ease-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* 添加居中显示样式 */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px;
 }
 
+.forgot-password-container:hover {
+  transform: translate(-50%, -50%) translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* 标题样式 */
 .title {
   text-align: center;
   color: #333;
   margin-bottom: 30px;
   font-size: 24px;
+  font-weight: 600;
+  animation: slideInUp 0.5s ease-out 0.2s both;
 }
 
+/* 步骤内容 */
 .step-content {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  animation: slideInUp 0.5s ease-out 0.3s both;
 }
 
+/* 表单组样式 */
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  animation: slideInUp 0.5s ease-out both;
 }
 
+.form-group:nth-child(1) {
+  animation-delay: 0.4s;
+}
+
+.form-group:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.form-group:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+/* 标签样式 */
 label {
   font-weight: 500;
   color: #555;
   font-size: 14px;
+  transition: color 0.3s ease;
 }
 
+input:focus + label,
+input:not(:placeholder-shown) + label {
+  color: #4CAF50;
+}
+
+/* 输入框样式 */
 input {
-  padding: 12px;
+  padding: 12px 16px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 16px;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  position: relative;
+  z-index: 1;
 }
 
 input:focus {
   outline: none;
   border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  transform: translateY(-1px);
 }
 
 input:disabled {
   background-color: #f5f5f5;
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
+input::placeholder {
+  color: #999;
+  transition: color 0.3s ease;
+}
+
+input:focus::placeholder {
+  color: #ccc;
+}
+
+/* 验证码输入组 */
 .code-input-group {
   display: flex;
   gap: 10px;
+  align-items: flex-start;
 }
 
 .code-input-group input {
   flex: 1;
 }
 
+/* 主要按钮样式 */
 .btn-primary {
-  padding: 12px;
+  padding: 12px 24px;
   background-color: #4CAF50;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  animation: slideInUp 0.5s ease-out 0.7s both;
 }
 
 .btn-primary:hover:not(:disabled) {
   background-color: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn-primary:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
 }
 
+/* 按钮点击波纹效果 */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-primary:active:not(:disabled)::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* 次要按钮样式 */
 .btn-secondary {
   padding: 12px 16px;
   background-color: #f0f0f0;
   color: #333;
-  border: none;
-  border-radius: 4px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
   white-space: nowrap;
 }
 
 .btn-secondary:hover:not(:disabled) {
   background-color: #e0e0e0;
+  border-color: #ccc;
+  transform: translateY(-1px);
 }
 
 .btn-secondary:disabled {
   background-color: #f5f5f5;
   cursor: not-allowed;
   color: #999;
+  opacity: 0.7;
+  transform: none;
 }
 
+/* 链接按钮样式 */
 .btn-link {
   padding: 12px;
   background-color: transparent;
@@ -409,39 +569,104 @@ input:disabled {
   border: none;
   font-size: 14px;
   cursor: pointer;
-  transition: color 0.3s;
+  transition: all 0.3s ease;
 }
 
 .btn-link:hover {
   color: #45a049;
-  text-decoration: underline;
+  transform: translateX(3px);
+  text-decoration: none;
 }
 
+/* 错误消息样式 */
 .error-message {
   color: #f44336;
   font-size: 14px;
   margin-top: -10px;
+  animation: shake 0.5s ease-in-out;
+  padding: 8px 12px;
+  background-color: #ffebee;
+  border-radius: 4px;
+  border-left: 4px solid #f44336;
 }
 
+/* 倒计时样式 */
 .countdown {
   text-align: center;
   color: #666;
   font-size: 14px;
   margin-top: -10px;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  animation: fadeIn 0.5s ease-out;
 }
 
+/* 成功消息样式 */
 .success-message {
   text-align: center;
-  padding: 20px;
+  padding: 30px 20px;
+  background-color: #f1f8e9;
+  border-radius: 8px;
+  border: 1px solid #dcedc8;
+  animation: fadeIn 0.6s ease-out, pulse 1s ease-out 0.5s;
 }
 
 .success-message h3 {
   color: #4CAF50;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .success-message p {
   color: #666;
   margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+/* 步骤指示器样式 */
+.step-indicator {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+  gap: 10px;
+}
+
+.step {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.step.active {
+  background-color: #4CAF50;
+  color: white;
+  transform: scale(1.1);
+}
+
+.step.completed {
+  background-color: #81c784;
+  color: white;
+}
+
+.step-line {
+  height: 2px;
+  background-color: #f0f0f0;
+  flex: 1;
+  align-self: center;
+  transition: background-color 0.3s ease;
+}
+
+.step-line.completed {
+  background-color: #4CAF50;
 }
 </style>
