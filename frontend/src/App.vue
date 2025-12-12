@@ -78,7 +78,7 @@
     
     <footer class="footer">
       <div class="container">
-        <p>&copy; 2023 博客系统. All rights reserved.</p>
+        <p>&copy; 2025 博客系统. All rights reserved.</p>
       </div>
     </footer>
   </div>
